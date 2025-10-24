@@ -1,0 +1,10 @@
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild*/
+[Ll]ogs/
+[Uu]serSettings/
+MemoryCaptures/
+sysinfo.txt
+*.unitypackage
+.vs/
