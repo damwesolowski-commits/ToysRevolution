@@ -10,7 +10,7 @@
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace></RootNamespace>
-    <ProjectGuid>{A9D93AE5-15F2-AE2C-48A1-24A9E233E2A1}</ProjectGuid>
+    <ProjectGuid>{E5B80FCB-F68E-59AC-8DD4-4872EAF50D84}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <AssemblyName>Drawing</AssemblyName>

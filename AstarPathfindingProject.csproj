@@ -10,7 +10,7 @@
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace></RootNamespace>
-    <ProjectGuid>{489FD094-EA79-B9F7-1446-BCB3F5A7D8CF}</ProjectGuid>
+    <ProjectGuid>{5BAC7712-6809-BF2B-208C-013F6D12D1CE}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <AssemblyName>AstarPathfindingProject</AssemblyName>
@@ -1375,15 +1375,15 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="PackageTools.csproj">
-      <Project>{EAE8D128-827F-1317-676F-E2021B5281A6}</Project>
+      <Project>{B6BF1B44-58D7-276D-50D1-74E75B685B3B}</Project>
       <Name>PackageTools</Name>
     </ProjectReference>
     <ProjectReference Include="Drawing.csproj">
-      <Project>{A9D93AE5-15F2-AE2C-48A1-24A9E233E2A1}</Project>
+      <Project>{E5B80FCB-F68E-59AC-8DD4-4872EAF50D84}</Project>
       <Name>Drawing</Name>
     </ProjectReference>
     <ProjectReference Include="andywiecko.BurstTriangulator.csproj">
-      <Project>{CCD2B1AD-7527-EF55-8C5D-91D6F39DA2AC}</Project>
+      <Project>{68F7A3BF-41D1-7A74-2D77-3D4E1D296FC6}</Project>
       <Name>andywiecko.BurstTriangulator</Name>
     </ProjectReference>
   </ItemGroup>

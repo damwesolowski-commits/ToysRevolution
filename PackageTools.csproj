@@ -10,7 +10,7 @@
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace></RootNamespace>
-    <ProjectGuid>{EAE8D128-827F-1317-676F-E2021B5281A6}</ProjectGuid>
+    <ProjectGuid>{B6BF1B44-58D7-276D-50D1-74E75B685B3B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <AssemblyName>PackageTools</AssemblyName>
@@ -563,10 +563,6 @@
       <HintPath>C:\Program Files\Unity\Hub\Editor\6000.2.8f1\Editor\Data\Managed\UnityEditor.Graphs.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="UnityEditor.WebGL.Extensions">
-      <HintPath>C:\Program Files\Unity\Hub\Editor\6000.2.8f1\Editor\Data\PlaybackEngines\WebGLSupport\UnityEditor.WebGL.Extensions.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="UnityEditor.WindowsStandalone.Extensions">
       <HintPath>C:\Program Files\Unity\Hub\Editor\6000.2.8f1\Editor\Data\PlaybackEngines\WindowsStandaloneSupport\UnityEditor.WindowsStandalone.Extensions.dll</HintPath>
       <Private>False</Private>
@@ -1082,7 +1078,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Drawing.csproj">
-      <Project>{A9D93AE5-15F2-AE2C-48A1-24A9E233E2A1}</Project>
+      <Project>{E5B80FCB-F68E-59AC-8DD4-4872EAF50D84}</Project>
       <Name>Drawing</Name>
     </ProjectReference>
   </ItemGroup>

@@ -10,7 +10,7 @@
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace></RootNamespace>
-    <ProjectGuid>{36E132A8-B66B-23CF-E97F-54E7A04D8064}</ProjectGuid>
+    <ProjectGuid>{E91B186A-D748-0119-244B-F462E445011A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <AssemblyName>Assembly-CSharp-Editor</AssemblyName>
@@ -59,8 +59,8 @@
     <Analyzer Include="C:\Program Files\Unity\Hub\Editor\6000.2.8f1\Editor\Data\Tools\Unity.SourceGenerators\Unity.SourceGenerators.dll" />
     <Analyzer Include="C:\Program Files\Unity\Hub\Editor\6000.2.8f1\Editor\Data\Tools\Unity.SourceGenerators\Unity.Properties.SourceGenerator.dll" />
     <Analyzer Include="C:\Program Files\Unity\Hub\Editor\6000.2.8f1\Editor\Data\Tools\Unity.SourceGenerators\Unity.UIToolkit.SourceGenerator.dll" />
-    <Analyzer Include="C:\Users\damwe\Toys Revolution\Library\PackageCache\com.unity.ai.inference@4ac711cab9a3\Runtime\Core\SourceGenerator\SourceGenerators.dll" />
-    <Analyzer Include="C:\Users\damwe\Toys Revolution\Library\PackageCache\com.unity.dt.app-ui@7b87c8225c06\Runtime\SourceGenerators\netstandard2.0\EnumToLowerCase.dll" />
+    <Analyzer Include="C:\Users\damwe\OneDrive\Dokumenty\GitHub\ToysRevolution\Library\PackageCache\com.unity.ai.inference@4ac711cab9a3\Runtime\Core\SourceGenerator\SourceGenerators.dll" />
+    <Analyzer Include="C:\Users\damwe\OneDrive\Dokumenty\GitHub\ToysRevolution\Library\PackageCache\com.unity.dt.app-ui@7b87c8225c06\Runtime\SourceGenerators\netstandard2.0\EnumToLowerCase.dll" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\Editor\GridBakeEditor.cs" />
@@ -564,10 +564,6 @@
     </Reference>
     <Reference Include="UnityEditor.Graphs">
       <HintPath>C:\Program Files\Unity\Hub\Editor\6000.2.8f1\Editor\Data\Managed\UnityEditor.Graphs.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="UnityEditor.WebGL.Extensions">
-      <HintPath>C:\Program Files\Unity\Hub\Editor\6000.2.8f1\Editor\Data\PlaybackEngines\WebGLSupport\UnityEditor.WebGL.Extensions.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEditor.WindowsStandalone.Extensions">
@@ -1473,39 +1469,39 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Assembly-CSharp.csproj">
-      <Project>{28B59D5D-3DA0-DE7F-7668-D7A920EBAF63}</Project>
+      <Project>{7AF39418-9A47-A9A0-E5B7-B7B96208580F}</Project>
       <Name>Assembly-CSharp</Name>
     </ProjectReference>
     <ProjectReference Include="DrawingEditor.csproj">
-      <Project>{E33A6611-E9E3-BE6E-7621-17866742AC3A}</Project>
+      <Project>{A4AB8954-4E35-E839-6B26-B6042E6DDAF7}</Project>
       <Name>DrawingEditor</Name>
     </ProjectReference>
     <ProjectReference Include="AstarPathfindingProject.csproj">
-      <Project>{489FD094-EA79-B9F7-1446-BCB3F5A7D8CF}</Project>
+      <Project>{5BAC7712-6809-BF2B-208C-013F6D12D1CE}</Project>
       <Name>AstarPathfindingProject</Name>
     </ProjectReference>
     <ProjectReference Include="andywiecko.BurstTriangulator.csproj">
-      <Project>{CCD2B1AD-7527-EF55-8C5D-91D6F39DA2AC}</Project>
+      <Project>{68F7A3BF-41D1-7A74-2D77-3D4E1D296FC6}</Project>
       <Name>andywiecko.BurstTriangulator</Name>
     </ProjectReference>
     <ProjectReference Include="Drawing.csproj">
-      <Project>{A9D93AE5-15F2-AE2C-48A1-24A9E233E2A1}</Project>
+      <Project>{E5B80FCB-F68E-59AC-8DD4-4872EAF50D84}</Project>
       <Name>Drawing</Name>
     </ProjectReference>
     <ProjectReference Include="DrawingPackageToolsEditor.csproj">
-      <Project>{4B207F82-2D53-0B3A-59E0-CE14F870F84D}</Project>
+      <Project>{1B4DFD6B-665D-BC23-A8B6-6E80B0816D0E}</Project>
       <Name>DrawingPackageToolsEditor</Name>
     </ProjectReference>
     <ProjectReference Include="PackageTools.csproj">
-      <Project>{EAE8D128-827F-1317-676F-E2021B5281A6}</Project>
+      <Project>{B6BF1B44-58D7-276D-50D1-74E75B685B3B}</Project>
       <Name>PackageTools</Name>
     </ProjectReference>
     <ProjectReference Include="AstarPackageToolsEditor.csproj">
-      <Project>{D0A6829F-DB11-059D-1641-EE4C300E5A1A}</Project>
+      <Project>{4B57C969-1C13-4CD7-7DA2-FA1A70FBEC7F}</Project>
       <Name>AstarPackageToolsEditor</Name>
     </ProjectReference>
     <ProjectReference Include="AstarPathfindingProjectEditor.csproj">
-      <Project>{41CAEAFA-CABE-8590-1981-90929621D6E9}</Project>
+      <Project>{B531F6F6-9C15-757F-B19F-4086761A9AE5}</Project>
       <Name>AstarPathfindingProjectEditor</Name>
     </ProjectReference>
   </ItemGroup>

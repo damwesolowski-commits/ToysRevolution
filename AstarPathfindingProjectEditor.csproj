@@ -10,7 +10,7 @@
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace></RootNamespace>
-    <ProjectGuid>{41CAEAFA-CABE-8590-1981-90929621D6E9}</ProjectGuid>
+    <ProjectGuid>{B531F6F6-9C15-757F-B19F-4086761A9AE5}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <AssemblyName>AstarPathfindingProjectEditor</AssemblyName>
@@ -610,10 +610,6 @@
       <HintPath>C:\Program Files\Unity\Hub\Editor\6000.2.8f1\Editor\Data\Managed\UnityEditor.Graphs.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="UnityEditor.WebGL.Extensions">
-      <HintPath>C:\Program Files\Unity\Hub\Editor\6000.2.8f1\Editor\Data\PlaybackEngines\WebGLSupport\UnityEditor.WebGL.Extensions.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="UnityEditor.WindowsStandalone.Extensions">
       <HintPath>C:\Program Files\Unity\Hub\Editor\6000.2.8f1\Editor\Data\PlaybackEngines\WindowsStandaloneSupport\UnityEditor.WindowsStandalone.Extensions.dll</HintPath>
       <Private>False</Private>
@@ -1149,19 +1145,19 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="AstarPathfindingProject.csproj">
-      <Project>{489FD094-EA79-B9F7-1446-BCB3F5A7D8CF}</Project>
+      <Project>{5BAC7712-6809-BF2B-208C-013F6D12D1CE}</Project>
       <Name>AstarPathfindingProject</Name>
     </ProjectReference>
     <ProjectReference Include="AstarPackageToolsEditor.csproj">
-      <Project>{D0A6829F-DB11-059D-1641-EE4C300E5A1A}</Project>
+      <Project>{4B57C969-1C13-4CD7-7DA2-FA1A70FBEC7F}</Project>
       <Name>AstarPackageToolsEditor</Name>
     </ProjectReference>
     <ProjectReference Include="PackageTools.csproj">
-      <Project>{EAE8D128-827F-1317-676F-E2021B5281A6}</Project>
+      <Project>{B6BF1B44-58D7-276D-50D1-74E75B685B3B}</Project>
       <Name>PackageTools</Name>
     </ProjectReference>
     <ProjectReference Include="Drawing.csproj">
-      <Project>{A9D93AE5-15F2-AE2C-48A1-24A9E233E2A1}</Project>
+      <Project>{E5B80FCB-F68E-59AC-8DD4-4872EAF50D84}</Project>
       <Name>Drawing</Name>
     </ProjectReference>
   </ItemGroup>
