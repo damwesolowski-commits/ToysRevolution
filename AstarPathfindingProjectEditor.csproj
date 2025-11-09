@@ -10,7 +10,7 @@
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace></RootNamespace>
-    <ProjectGuid>{41CAEAFA-CABE-8590-1981-90929621D6E9}</ProjectGuid>
+    <ProjectGuid>{B531F6F6-9C15-757F-B19F-4086761A9AE5}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <AssemblyName>AstarPathfindingProjectEditor</AssemblyName>
@@ -61,53 +61,52 @@
     <Analyzer Include="C:\Program Files\Unity\Hub\Editor\6000.2.8f1\Editor\Data\Tools\Unity.SourceGenerators\Unity.UIToolkit.SourceGenerator.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Packages\com.arongranberg.astar\Editor\ModifierEditors\RaycastModifierEditor.cs" />
-    <Compile Include="Packages\com.arongranberg.astar\Editor\EditorHelpers.cs" />
-    <Compile Include="Packages\com.arongranberg.astar\Editor\GraphEditors\NavMeshGeneratorEditor.cs" />
-    <Compile Include="Packages\com.arongranberg.astar\Editor\RuleEditors\RuleElevationPenaltyEditor.cs" />
-    <Compile Include="Packages\com.arongranberg.astar\Editor\RuleEditors\RulePerLayerModificationsEditor.cs" />
-    <Compile Include="Packages\com.arongranberg.astar\Editor\CustomGraphEditorAttribute.cs" />
-    <Compile Include="Packages\com.arongranberg.astar\Editor\SeekerEditor.cs" />
-    <Compile Include="Packages\com.arongranberg.astar\Editor\GraphEditors\GridGeneratorEditor.cs" />
-    <Compile Include="Packages\com.arongranberg.astar\Editor\ProceduralGridMoverEditor.cs" />
-    <Compile Include="Packages\com.arongranberg.astar\Editor\GraphEditors\LayerGridGraphEditor.cs" />
-    <Compile Include="Packages\com.arongranberg.astar\Editor\AILerpEditor.cs" />
-    <Compile Include="Packages\com.arongranberg.astar\Editor\AstarUpdateChecker.cs" />
-    <Compile Include="Packages\com.arongranberg.astar\Editor\AIBaseEditor.cs" />
-    <Compile Include="Packages\com.arongranberg.astar\Editor\Inspectors\AIDestinationSetterEditor.cs" />
-    <Compile Include="Packages\com.arongranberg.astar\Editor\NavmeshPrefabEditor.cs" />
-    <Compile Include="Packages\com.arongranberg.astar\Editor\RVOControllerEditor.cs" />
-    <Compile Include="Packages\com.arongranberg.astar\Editor\AstarUpdateWindow.cs" />
-    <Compile Include="Packages\com.arongranberg.astar\Editor\NavmeshAddEditor.cs" />
-    <Compile Include="Packages\com.arongranberg.astar\Editor\GraphEditors\RecastGraphEditor.cs" />
-    <Compile Include="Packages\com.arongranberg.astar\Editor\Inspectors\NodeLink2Editor.cs" />
-    <Compile Include="Packages\com.arongranberg.astar\Editor\PathfindingTagDrawer.cs" />
-    <Compile Include="Packages\com.arongranberg.astar\Editor\GraphEditors\PointGeneratorEditor.cs" />
-    <Compile Include="Packages\com.arongranberg.astar\Editor\Inspectors\FollowerEntityEditor.cs" />
-    <Compile Include="Packages\com.arongranberg.astar\Editor\GraphEditors\GraphEditor.cs" />
-    <Compile Include="Packages\com.arongranberg.astar\Editor\RVOSquareObstacleEditor.cs" />
-    <Compile Include="Packages\com.arongranberg.astar\Editor\RuleEditors\GridGraphRuleEditor.cs" />
-    <Compile Include="Packages\com.arongranberg.astar\Editor\GraphUpdateSceneEditor.cs" />
-    <Compile Include="Packages\com.arongranberg.astar\Editor\UI\WelcomeScreen.cs" />
-    <Compile Include="Packages\com.arongranberg.astar\Editor\RuleEditors\RuleTextureEditor.cs" />
-    <Compile Include="Packages\com.arongranberg.astar\Editor\ModifierEditors\FunnelModifierEditor.cs" />
-    <Compile Include="Packages\com.arongranberg.astar\Editor\AstarPathEditor.cs" />
-    <Compile Include="Packages\com.arongranberg.astar\Editor\PathfindingEditorSettings.cs" />
-    <Compile Include="Packages\com.arongranberg.astar\Editor\ModifierEditors\SmoothModifierEditor.cs" />
-    <Compile Include="Packages\com.arongranberg.astar\Editor\AnimationLinkEditor.cs" />
-    <Compile Include="Packages\com.arongranberg.astar\Editor\RecastMeshObjEditor.cs" />
-    <Compile Include="Packages\com.arongranberg.astar\Editor\LocalSpaceRichAIEditor.cs" />
-    <Compile Include="Packages\com.arongranberg.astar\Editor\GraphMaskDrawer.cs" />
-    <Compile Include="Packages\com.arongranberg.astar\Editor\NavmeshCutEditor.cs" />
-    <Compile Include="Packages\com.arongranberg.astar\Editor\RVONavmeshEditor.cs" />
-    <Compile Include="Packages\com.arongranberg.astar\Editor\RecastNavmeshModifierEditor.cs" />
-    <Compile Include="Packages\com.arongranberg.astar\Editor\RVOSimulatorEditor.cs" />
-    <Compile Include="Packages\com.arongranberg.astar\Editor\RuleEditors\RuleAnglePenaltyEditor.cs" />
+    <Compile Include="Assets\AstarPathfindingProject\Editor\GraphEditors\LayerGridGraphEditor.cs" />
+    <Compile Include="Assets\AstarPathfindingProject\Editor\RuleEditors\RuleElevationPenaltyEditor.cs" />
+    <Compile Include="Assets\AstarPathfindingProject\Editor\GraphEditors\RecastGraphEditor.cs" />
+    <Compile Include="Assets\AstarPathfindingProject\Editor\Inspectors\AIDestinationSetterEditor.cs" />
+    <Compile Include="Assets\AstarPathfindingProject\Editor\GraphUpdateSceneEditor.cs" />
+    <Compile Include="Assets\AstarPathfindingProject\Editor\ModifierEditors\FunnelModifierEditor.cs" />
+    <Compile Include="Assets\AstarPathfindingProject\Editor\EditorHelpers.cs" />
+    <Compile Include="Assets\AstarPathfindingProject\Editor\AIBaseEditor.cs" />
+    <Compile Include="Assets\AstarPathfindingProject\Editor\GraphEditors\GraphEditor.cs" />
+    <Compile Include="Assets\AstarPathfindingProject\Editor\PathfindingTagDrawer.cs" />
+    <Compile Include="Assets\AstarPathfindingProject\Editor\ModifierEditors\RaycastModifierEditor.cs" />
+    <Compile Include="Assets\AstarPathfindingProject\Editor\RuleEditors\RulePerLayerModificationsEditor.cs" />
+    <Compile Include="Assets\AstarPathfindingProject\Editor\NavmeshAddEditor.cs" />
+    <Compile Include="Assets\AstarPathfindingProject\Editor\GraphMaskDrawer.cs" />
+    <Compile Include="Assets\AstarPathfindingProject\Editor\GraphEditors\NavMeshGeneratorEditor.cs" />
+    <Compile Include="Assets\AstarPathfindingProject\Editor\RVOControllerEditor.cs" />
+    <Compile Include="Assets\AstarPathfindingProject\Editor\Inspectors\NodeLink2Editor.cs" />
+    <Compile Include="Assets\AstarPathfindingProject\Editor\PathfindingEditorSettings.cs" />
+    <Compile Include="Assets\AstarPathfindingProject\Editor\ProceduralGridMoverEditor.cs" />
+    <Compile Include="Assets\AstarPathfindingProject\Editor\RecastNavmeshModifierEditor.cs" />
+    <Compile Include="Assets\AstarPathfindingProject\Editor\ModifierEditors\SmoothModifierEditor.cs" />
+    <Compile Include="Assets\AstarPathfindingProject\Editor\AstarUpdateChecker.cs" />
+    <Compile Include="Assets\AstarPathfindingProject\Editor\RecastMeshObjEditor.cs" />
+    <Compile Include="Assets\AstarPathfindingProject\Editor\SeekerEditor.cs" />
+    <Compile Include="Assets\AstarPathfindingProject\Editor\CustomGraphEditorAttribute.cs" />
+    <Compile Include="Assets\AstarPathfindingProject\Editor\RuleEditors\RuleTextureEditor.cs" />
+    <Compile Include="Assets\AstarPathfindingProject\Editor\RVOSquareObstacleEditor.cs" />
+    <Compile Include="Assets\AstarPathfindingProject\Editor\AstarPathEditor.cs" />
+    <Compile Include="Assets\AstarPathfindingProject\Editor\AstarUpdateWindow.cs" />
+    <Compile Include="Assets\AstarPathfindingProject\Editor\Inspectors\FollowerEntityEditor.cs" />
+    <Compile Include="Assets\AstarPathfindingProject\Editor\AnimationLinkEditor.cs" />
+    <Compile Include="Assets\AstarPathfindingProject\Editor\GraphEditors\PointGeneratorEditor.cs" />
+    <Compile Include="Assets\AstarPathfindingProject\Editor\NavmeshCutEditor.cs" />
+    <Compile Include="Assets\AstarPathfindingProject\Editor\RVONavmeshEditor.cs" />
+    <Compile Include="Assets\AstarPathfindingProject\Editor\UI\WelcomeScreen.cs" />
+    <Compile Include="Assets\AstarPathfindingProject\Editor\RuleEditors\RuleAnglePenaltyEditor.cs" />
+    <Compile Include="Assets\AstarPathfindingProject\Editor\LocalSpaceRichAIEditor.cs" />
+    <Compile Include="Assets\AstarPathfindingProject\Editor\RuleEditors\GridGraphRuleEditor.cs" />
+    <Compile Include="Assets\AstarPathfindingProject\Editor\GraphEditors\GridGeneratorEditor.cs" />
+    <Compile Include="Assets\AstarPathfindingProject\Editor\AILerpEditor.cs" />
+    <Compile Include="Assets\AstarPathfindingProject\Editor\NavmeshPrefabEditor.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Packages\com.arongranberg.astar\Editor\AstarPathfindingProjectEditor.uss" />
-    <None Include="Packages\com.arongranberg.astar\Editor\UI\WelcomeScreen.uxml" />
-    <None Include="Packages\com.arongranberg.astar\Editor\AstarPathfindingProjectEditor.asmdef" />
+    <None Include="Assets\AstarPathfindingProject\Editor\AstarPathfindingProjectEditor.uss" />
+    <None Include="Assets\AstarPathfindingProject\Editor\UI\WelcomeScreen.uxml" />
+    <None Include="Assets\AstarPathfindingProject\Editor\AstarPathfindingProjectEditor.asmdef" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">
@@ -608,10 +607,6 @@
     </Reference>
     <Reference Include="UnityEditor.Graphs">
       <HintPath>C:\Program Files\Unity\Hub\Editor\6000.2.8f1\Editor\Data\Managed\UnityEditor.Graphs.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="UnityEditor.WebGL.Extensions">
-      <HintPath>C:\Program Files\Unity\Hub\Editor\6000.2.8f1\Editor\Data\PlaybackEngines\WebGLSupport\UnityEditor.WebGL.Extensions.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEditor.WindowsStandalone.Extensions">
@@ -1149,19 +1144,19 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="AstarPathfindingProject.csproj">
-      <Project>{489FD094-EA79-B9F7-1446-BCB3F5A7D8CF}</Project>
+      <Project>{5BAC7712-6809-BF2B-208C-013F6D12D1CE}</Project>
       <Name>AstarPathfindingProject</Name>
     </ProjectReference>
     <ProjectReference Include="AstarPackageToolsEditor.csproj">
-      <Project>{D0A6829F-DB11-059D-1641-EE4C300E5A1A}</Project>
+      <Project>{4B57C969-1C13-4CD7-7DA2-FA1A70FBEC7F}</Project>
       <Name>AstarPackageToolsEditor</Name>
     </ProjectReference>
     <ProjectReference Include="PackageTools.csproj">
-      <Project>{EAE8D128-827F-1317-676F-E2021B5281A6}</Project>
+      <Project>{B6BF1B44-58D7-276D-50D1-74E75B685B3B}</Project>
       <Name>PackageTools</Name>
     </ProjectReference>
     <ProjectReference Include="Drawing.csproj">
-      <Project>{A9D93AE5-15F2-AE2C-48A1-24A9E233E2A1}</Project>
+      <Project>{E5B80FCB-F68E-59AC-8DD4-4872EAF50D84}</Project>
       <Name>Drawing</Name>
     </ProjectReference>
   </ItemGroup>

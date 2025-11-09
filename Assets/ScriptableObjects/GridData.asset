@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8d0db2436cf7f2344bee3411e9928e39, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GridData
-  size: {x: 46, y: 22}
+  size: {x: 46, y: 24}

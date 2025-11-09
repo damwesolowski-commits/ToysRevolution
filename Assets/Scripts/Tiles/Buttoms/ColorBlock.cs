@@ -1,0 +1,159 @@
+﻿using UnityEngine;
+using System.Collections;
+
+[RequireComponent(typeof(SpriteRenderer))]
+[RequireComponent(typeof(AudioSource))]
+public class ColorBlock : MonoBehaviour
+{
+
+    [Header("Group Settings")]
+    public int groupId; // ⬅️ ID grupy, do której klocek należy
+    public enum BlockType
+    {
+        Normal,    // zwykły, nie zabija
+        Deadly,    // zabija gracza przy kontakcie
+        Bridge,    // most, itp.
+    }
+
+    [Header("Block Settings")]
+    public BlockType blockType = BlockType.Normal;
+
+    [Header("Ustawienia siatki")]
+    public bool isExtendedAtStart = true; // startowy stan
+    private bool isExtended;
+    public bool IsExtended => isExtended;
+
+    [Header("Sprites")]
+    public Sprite extendedSprite; // wysunięty
+    public Sprite hiddenSprite;   // schowany
+
+    [Header("Dźwięki")]
+    public AudioClip extendedSound; // dźwięk wysunięcia
+    public AudioClip hiddenSound;   // dźwięk schowania
+
+    private SpriteRenderer spriteRenderer;
+    private AudioSource audioSource;
+    private Vector2Int gridPos;
+
+    void Awake()
+    {
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        audioSource = GetComponent<AudioSource>();
+        audioSource.playOnAwake = false;
+
+        SetState(isExtendedAtStart, initialize: true);
+    }
+
+    // 🔹 Ustawia stan bloku (true = wysunięty, false = schowany)
+    public void SetState(bool extended, bool initialize = false)
+    {
+        bool stateChanged = (extended != isExtended);
+        isExtended = extended;
+        spriteRenderer.sprite = isExtended ? extendedSprite : hiddenSprite;
+
+        // 🧱 aktualizacja w GridData i A*
+        UpdateGridState();
+        UpdateAstar();
+
+        // 🔹 Jeśli klocek się wysunął i jest deadly — sprawdź wszystkich graczy
+        if (isExtended && blockType == BlockType.Deadly)
+        {
+            TileLogicManager tileLogic = TileLogicManager.Instance;
+            if (tileLogic != null)
+            {
+                Collider2D[] allUnits = Physics2D.OverlapCircleAll(transform.position, 0.3f);
+                foreach (var unit in allUnits)
+                {
+                    GridMover mover = unit.GetComponent<GridMover>();
+                    if (mover != null)
+                    {
+                        var health = mover.GetComponent<Health>();
+                        if (health != null)
+                        {
+                            // 🔸 Sprawdź, czy ten gracz stoi dokładnie nad deadly kaflem
+                            var cell = tileLogic.gridData.GetCell((Vector2Int)tileLogic.groundTilemap.WorldToCell(transform.position));
+                            if (cell != null && cell.isDeadly)
+                            {
+                                health.TakeDamage(9999);
+                                //Debug.Log($"[ColorBlock] {mover.name} zginął, bo deadly klocek wysunął się pod nim.");
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // 🔊 Odtwórz dźwięk i wyświetl log (tylko jeśli nie jest to inicjalizacja i stan się zmienił)
+        if (!initialize && stateChanged)
+        {
+            if (isExtended && extendedSound != null)
+                audioSource.PlayOneShot(extendedSound);
+            else if (!isExtended && hiddenSound != null)
+                audioSource.PlayOneShot(hiddenSound);
+        }
+    }
+    private void UpdateGridState()
+    {
+        if (TileLogicManager.Instance == null || TileLogicManager.Instance.gridData == null)
+            return;
+
+        Vector3Int cell = TileLogicManager.Instance.groundTilemap.WorldToCell(transform.position);
+        gridPos = new Vector2Int(cell.x, cell.y);
+
+        var cellData = TileLogicManager.Instance.gridData.GetCell(gridPos);
+        if (cellData == null)
+        {
+            cellData = new GridData.CellData();
+            TileLogicManager.Instance.gridData.SetCell(gridPos, cellData);
+        }
+
+        cellData.isObstacleHard = isExtended;
+        cellData.walkable = !isExtended;
+
+        // 🔹 Jeśli ten klocek to deadly, ustaw to w gridData
+        cellData.isDeadly = (isExtended && blockType == BlockType.Deadly);
+        TileLogicManager.Instance.gridData.SetCell(gridPos, cellData);
+    }
+
+    private void UpdateAstar()
+    {
+        if (AstarPath.active == null) return;
+
+        Vector3 worldCenter = TileLogicManager.Instance.groundTilemap.CellToWorld(
+            new Vector3Int(gridPos.x, gridPos.y, 0)
+        ) + new Vector3(0.5f, 0.5f, 0);
+
+        var bounds = new Bounds(worldCenter, Vector3.one);
+        var guo = new Pathfinding.GraphUpdateObject(bounds)
+        {
+            updatePhysics = false,
+            modifyWalkability = true,
+            setWalkability = !isExtended
+        };
+
+        AstarPath.active.UpdateGraphs(guo);
+        AstarPath.active.FlushGraphUpdates();
+    }
+
+    public void Toggle()
+    {
+        SetState(!isExtended);
+    }
+
+    public void ReapplyForAstar()
+    {
+        SetState(isExtended, initialize: false);
+    }
+#if UNITY_EDITOR
+    private void OnValidate()
+    {
+        // Jeśli spriteRenderer istnieje — aktualizuj widoczność w edytorze
+        if (spriteRenderer == null)
+            spriteRenderer = GetComponent<SpriteRenderer>();
+
+        // Aktualizuj sprite na podstawie flagi "Is Extended At Start"
+        if (spriteRenderer != null)
+            spriteRenderer.sprite = isExtendedAtStart ? extendedSprite : hiddenSprite;
+    }
+#endif
+}

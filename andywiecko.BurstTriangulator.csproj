@@ -10,7 +10,7 @@
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace></RootNamespace>
-    <ProjectGuid>{CCD2B1AD-7527-EF55-8C5D-91D6F39DA2AC}</ProjectGuid>
+    <ProjectGuid>{68F7A3BF-41D1-7A74-2D77-3D4E1D296FC6}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <AssemblyName>andywiecko.BurstTriangulator</AssemblyName>
@@ -61,12 +61,12 @@
     <Analyzer Include="C:\Program Files\Unity\Hub\Editor\6000.2.8f1\Editor\Data\Tools\Unity.SourceGenerators\Unity.UIToolkit.SourceGenerator.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Packages\com.arongranberg.astar\Core\Geometry\Triangulation\Triangulator.cs" />
-    <Compile Include="Packages\com.arongranberg.astar\Core\Geometry\Triangulation\U128.cs" />
-    <Compile Include="Packages\com.arongranberg.astar\Core\Geometry\Triangulation\TriangulationError.cs" />
+    <Compile Include="Assets\AstarPathfindingProject\Core\Geometry\Triangulation\U128.cs" />
+    <Compile Include="Assets\AstarPathfindingProject\Core\Geometry\Triangulation\Triangulator.cs" />
+    <Compile Include="Assets\AstarPathfindingProject\Core\Geometry\Triangulation\TriangulationError.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Packages\com.arongranberg.astar\Core\Geometry\Triangulation\andywiecko.BurstTriangulator.asmdef" />
+    <None Include="Assets\AstarPathfindingProject\Core\Geometry\Triangulation\andywiecko.BurstTriangulator.asmdef" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">
@@ -559,10 +559,6 @@
     </Reference>
     <Reference Include="UnityEditor.Graphs">
       <HintPath>C:\Program Files\Unity\Hub\Editor\6000.2.8f1\Editor\Data\Managed\UnityEditor.Graphs.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="UnityEditor.WebGL.Extensions">
-      <HintPath>C:\Program Files\Unity\Hub\Editor\6000.2.8f1\Editor\Data\PlaybackEngines\WebGLSupport\UnityEditor.WebGL.Extensions.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEditor.WindowsStandalone.Extensions">

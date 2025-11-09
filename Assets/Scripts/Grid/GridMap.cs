@@ -32,13 +32,14 @@ public class GridMap : MonoBehaviour
         if (gridData == null)
             Debug.LogError("❌ Brak przypisanego GridData! Upewnij się, że bake został wykonany.");
         else
-            Debug.Log($"✅ Wczytano GridData o rozmiarze: {gridData.size.x}x{gridData.size.y}");
+            Debug.Log($"✅ Wczytano GridData z {gridData.cells.Count} komórkami.");
     }
 
     public bool IsWalkable(Vector2Int gridPos)
     {
         if (gridData == null) return false;
-        if (gridData.TryGetCell(gridPos, out var cell))
+        var cell = gridData.GetCell(gridPos);
+        if (cell != null)
             return cell.walkable;
         return false;
     }

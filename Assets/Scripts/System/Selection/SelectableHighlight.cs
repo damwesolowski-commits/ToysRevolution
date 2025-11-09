@@ -1,26 +1,73 @@
 ﻿using UnityEngine;
 
-[RequireComponent(typeof(SpriteRenderer))]
 public class SelectableHighlight : MonoBehaviour
 {
-    public Color selectedColor = new Color(0.2f, 1f, 0.2f, 1f);
-    private Color original;
-    private SpriteRenderer sr;
+    [Header("Ring Settings")]
+    public GameObject selectionRingPrefab; // Prefab zielonego ringu
+    private GameObject activeRingInstance;
+
+    [Header("Tile Settings")]
+    public float tileSize = 1f; // 1 jednostka = 1 tile, jeśli 64px przy 64 PPU to zostaw 1
 
     public bool IsSelected { get; private set; } = false;
 
     void Awake()
     {
-        sr = GetComponent<SpriteRenderer>();
-        original = sr.color;
-        // Upewnij się, że zawsze startujemy jako niezaznaczony
         IsSelected = false;
-        sr.color = original;
     }
 
     public void SetSelected(bool value)
     {
+        // Jeśli stan się nie zmienia — wyjdź (to eliminuje "toggle" przez przypadek)
+        if (IsSelected == value)
+            return;
+
         IsSelected = value;
-        sr.color = IsSelected ? selectedColor : original;
+
+        // 🔹 Odwołanie do HealthBar dziecka (jeśli istnieje)
+        var healthBar = GetComponentInChildren<HealthBar>();
+
+        if (IsSelected)
+        {
+            // Włącz ring
+            if (selectionRingPrefab != null && activeRingInstance == null)
+            {
+                activeRingInstance = Instantiate(selectionRingPrefab, transform.position, Quaternion.identity);
+                activeRingInstance.transform.SetParent(transform);
+                activeRingInstance.transform.localPosition = Vector3.zero;
+
+                // Dopasowanie skali ringu do rozmiaru kafelka
+                float ringSpriteSize = GetSpriteWorldSize(activeRingInstance);
+                if (ringSpriteSize > 0f)
+                {
+                    float scale = tileSize / ringSpriteSize;
+                    activeRingInstance.transform.localScale = new Vector3(scale, scale, 1f);
+                }
+            }
+
+            // 🔹 Pokaż pasek HP
+            if (healthBar != null)
+                healthBar.Show();
+        }
+        else
+        {
+            // Wyłącz ring
+            if (activeRingInstance != null)
+            {
+                Destroy(activeRingInstance);
+                activeRingInstance = null;
+            }
+
+            // 🔹 Ukryj pasek HP
+            if (healthBar != null)
+                healthBar.Hide();
+        }
+    }
+
+    private float GetSpriteWorldSize(GameObject obj)
+    {
+        var sr = obj.GetComponent<SpriteRenderer>();
+        if (sr == null || sr.sprite == null) return 0;
+        return sr.sprite.bounds.size.x; // szerokość w jednostkach świata
     }
 }

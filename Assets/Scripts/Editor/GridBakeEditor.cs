@@ -1,157 +1,181 @@
-﻿using UnityEditor;
-using UnityEngine;
+﻿using UnityEngine;
+using UnityEditor;
 using UnityEngine.Tilemaps;
+using System.IO;
+using System.Collections.Generic;
 
 public class GridBakeEditor : EditorWindow
 {
-    [MenuItem("Tools/Bake GridData")]
-    public static void ShowWindow()
+    [MenuItem("Tools/Bake Grid Data")]
+    public static void BakeGridData()
     {
-        GetWindow<GridBakeEditor>("Bake GridData");
-    }
-
-    GridMap gridMap;
-
-    void OnGUI()
-    {
-        GUILayout.Label("Bake Grid Data", EditorStyles.boldLabel);
-        gridMap = (GridMap)EditorGUILayout.ObjectField("Grid Map", gridMap, typeof(GridMap), true);
-
-        if (GUILayout.Button("Bake Grid Data"))
+        Tilemap[] tilemaps = Object.FindObjectsOfType<Tilemap>();
+        if (tilemaps.Length == 0)
         {
-            if (gridMap == null)
-            {
-                Debug.LogWarning("Brak przypisanego GridMap!");
-                return;
-            }
-            Bake(gridMap);
-        }
-    }
-
-    void Bake(GridMap grid)
-    {
-        var ground = grid.groundTilemap;
-        var obstacles = grid.obstacleTilemap;
-
-        if (ground == null)
-        {
-            Debug.LogError("Brak przypisanej groundTilemap!");
+            Debug.LogWarning("❌ Nie znaleziono żadnej Tilemapy w scenie!");
             return;
         }
 
-        var bounds = ground.cellBounds;
-        var gridData = ScriptableObject.CreateInstance<GridData>();
-        gridData.size = new Vector2Int(bounds.size.x, bounds.size.y);
+        // Tworzymy nowy obiekt GridData
+        GridData gridData = ScriptableObject.CreateInstance<GridData>();
+        gridData.cells = new Dictionary<Vector2Int, GridData.CellData>();
 
-        foreach (var pos in bounds.allPositionsWithin)
+        int totalTiles = 0;
+        int walkable = 0, obstaclesHard = 0, obstaclesSoft = 0, deadly = 0, slippery = 0, bridges = 0, switches = 0, other = 0;
+
+        foreach (var tilemap in tilemaps)
         {
-            if (!ground.HasTile(pos))
-                continue;
+            string name = tilemap.name.ToLower();
 
-            var data = new GridData.CellData();
-            var obstacleTile = obstacles != null ? obstacles.GetTile(pos) : null;
+            bool isGround = name.Contains("ground");
+            bool isObstacleHard = name.Contains("obstacles hard");
+            bool isObstacleSoft = name.Contains("obstacles soft");
+            bool isDeadly = name.Contains("deadly");
+            bool isSlippery = name.Contains("slippery");
+            bool isBridge = name.Contains("bridges");
+            bool isSwitch = name.Contains("switches");
+            bool isOther = name.Contains("other");
+            bool isDecor = name.Contains("decor");
 
-            // Zapisujemy tylko informację o przechodniości
-            data.walkable = obstacleTile == null;
+            if (isDecor)
+                continue; // pomijamy czysto wizualne warstwy
 
-            gridData.SetCell(new Vector2Int(pos.x, pos.y), data);
+            foreach (var pos in tilemap.cellBounds.allPositionsWithin)
+            {
+                TileBase tile = tilemap.GetTile(pos);
+                if (tile == null) continue;
+
+                totalTiles++;
+
+                Vector2Int cellPos = (Vector2Int)(Vector3Int)pos;
+                if (!gridData.cells.TryGetValue(cellPos, out var cell))
+                    cell = new GridData.CellData();
+
+                cell.position = cellPos;
+
+                // Ustawienia bazowe
+                cell.walkable = isGround;
+                cell.cost = 1f;
+
+                // Obstacles hard
+                if (isObstacleHard)
+                {
+                    cell.walkable = false;
+                    cell.cost = 9999f;
+                    cell.isObstacleHard = true;
+                    obstaclesHard++;
+                }
+
+                // Obstacles soft
+                if (isObstacleSoft)
+                {
+                    cell.walkable = false;
+                    cell.isObstacleSoft = true;
+                    cell.cost = 5f;
+                    obstaclesSoft++;
+                }
+
+                // Deadly
+                if (isDeadly)
+                {
+                    cell.walkable = true;
+                    cell.isDeadly = true;
+                    deadly++;
+                }
+
+                // Slippery
+                if (isSlippery)
+                {
+                    cell.walkable = true;
+                    cell.isSlippery = true;
+                    slippery++;
+                }
+
+                // Bridges
+                if (isBridge)
+                {
+                    cell.walkable = true;
+                    cell.isBridge = true;
+                    bridges++;
+                }
+
+                // Switches
+                if (isSwitch)
+                {
+                    cell.walkable = true;
+                    cell.isSwitch = true;
+                    switches++;
+                }
+
+                // Other
+                if (isOther)
+                {
+                    cell.walkable = true;
+                    cell.isSpecial = true;
+                    other++;
+                }
+
+                // Ground
+                if (isGround)
+                {
+                    cell.walkable = true;
+                    walkable++;
+                }
+
+                // Rezerwacja dla przyszłych Arrows (jeszcze bez implementacji)
+                if (name.Contains("arrows"))
+                {
+                    cell.isArrow = true;
+                    // Przyszłościowo: cell.arrowDirection = new Vector2Int(...);
+                }
+
+                gridData.SetCell(cellPos, cell);
+            }
         }
 
-        string path = "Assets/ScriptableObjects/GridData.asset";
-
-        // Jeśli asset już istnieje, nadpisujemy go, zamiast tworzyć nowy
-        var existingData = AssetDatabase.LoadAssetAtPath<GridData>(path);
-        if (existingData != null)
+        var bounds = new BoundsInt();
+        bool first = true;
+        foreach (var t in tilemaps)
         {
-            EditorUtility.CopySerialized(gridData, existingData);
-            EditorUtility.SetDirty(existingData);
-            Debug.Log("♻️ Nadpisano istniejący GridData.asset");
+            if (first) { bounds = t.cellBounds; first = false; }
+            Vector3Int min = Vector3Int.Min(bounds.position, t.cellBounds.position);
+            Vector3Int max = Vector3Int.Max(bounds.position + bounds.size, t.cellBounds.position + t.cellBounds.size);
+            bounds.position = min;
+            bounds.size = max - min;
+        }
+        gridData.size = (Vector2Int)bounds.size;
+
+        // Zapis pliku
+        string dir = "Assets/Data";
+        if (!Directory.Exists(dir))
+            Directory.CreateDirectory(dir);
+
+        string path = $"{dir}/GridData.asset";
+
+        var existing = AssetDatabase.LoadAssetAtPath<GridData>(path);
+        if (existing != null)
+        {
+            EditorUtility.CopySerialized(gridData, existing);
+            Debug.Log($"✅ Zaktualizowano istniejący GridData.asset ({totalTiles} pól)");
         }
         else
         {
             AssetDatabase.CreateAsset(gridData, path);
-            Debug.Log("🆕 Utworzono nowy GridData.asset");
+            Debug.Log($"✅ Utworzono nowy GridData.asset ({totalTiles} pól)");
         }
 
         AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
 
-        Debug.Log("✅ GridData baked successfully!");
-        Debug.Log($"Wygenerowano {gridData.cells.Count} pól w GridData.");
-
-        // Automatycznie przypisujemy GridData do GridMap w scenie
-        if (grid != null)
-        {
-            grid.gridData = gridData;
-            EditorUtility.SetDirty(grid);
-            UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(
-                UnityEditor.SceneManagement.EditorSceneManager.GetActiveScene()
-            );
-            Debug.Log("✅ GridData automatycznie przypisane do GridMap!");
-        }
-    }
-}
-
-[InitializeOnLoad]
-public static class AutoGridBake
-{
-    static AutoGridBake()
-    {
-        EditorApplication.playModeStateChanged += OnPlayModeChanged;
-    }
-
-    private static void OnPlayModeChanged(PlayModeStateChange state)
-    {
-        // Uruchamiamy bake automatycznie przed startem gry
-        if (state == PlayModeStateChange.ExitingEditMode)
-        {
-            var gridMap = Object.FindFirstObjectByType<GridMap>();
-            if (gridMap != null)
-            {
-                Debug.Log("🔄 Auto-bake GridData przed uruchomieniem gry...");
-                BakeNow(gridMap);
-            }
-        }
-    }
-
-    private static void BakeNow(GridMap grid)
-    {
-        var ground = grid.groundTilemap;
-        var obstacles = grid.obstacleTilemap;
-
-        if (ground == null)
-        {
-            Debug.LogWarning("⚠️ Auto-bake: Brak przypisanej groundTilemap.");
-            return;
-        }
-
-        var bounds = ground.cellBounds;
-        var gridData = ScriptableObject.CreateInstance<GridData>();
-        gridData.size = new Vector2Int(bounds.size.x, bounds.size.y);
-
-        foreach (var pos in bounds.allPositionsWithin)
-        {
-            if (!ground.HasTile(pos))
-                continue;
-
-            var data = new GridData.CellData();
-            var obstacleTile = obstacles != null ? obstacles.GetTile(pos) : null;
-
-            data.walkable = obstacleTile == null;
-            gridData.SetCell(new Vector2Int(pos.x, pos.y), data);
-        }
-
-        var existingData = AssetDatabase.LoadAssetAtPath<GridData>("Assets/ScriptableObjects/GridData.asset");
-        if (existingData != null)
-        {
-            EditorUtility.CopySerialized(gridData, existingData);
-            AssetDatabase.SaveAssets();
-        }
-        else
-        {
-            AssetDatabase.CreateAsset(gridData, "Assets/ScriptableObjects/GridData.asset");
-        }
-
-        AssetDatabase.SaveAssets();
-        Debug.Log("✅ Auto-bake zakończony pomyślnie!");
+        Debug.Log($"--- 🧱 GRID BAKE SUMMARY ---\n" +
+                  $"Walkable: {walkable}\n" +
+                  $"Obstacles Hard: {obstaclesHard}\n" +
+                  $"Obstacles Soft: {obstaclesSoft}\n" +
+                  $"Deadly: {deadly}\n" +
+                  $"Slippery: {slippery}\n" +
+                  $"Bridges: {bridges}\n" +
+                  $"Switches: {switches}\n" +
+                  $"Other: {other}\n" +
+                  $"Total tiles processed: {totalTiles}");
     }
 }

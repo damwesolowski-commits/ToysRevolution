@@ -10,7 +10,7 @@
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace></RootNamespace>
-    <ProjectGuid>{A9D93AE5-15F2-AE2C-48A1-24A9E233E2A1}</ProjectGuid>
+    <ProjectGuid>{E5B80FCB-F68E-59AC-8DD4-4872EAF50D84}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <AssemblyName>Drawing</AssemblyName>
@@ -61,35 +61,35 @@
     <Analyzer Include="C:\Program Files\Unity\Hub\Editor\6000.2.8f1\Editor\Data\Tools\Unity.SourceGenerators\Unity.UIToolkit.SourceGenerator.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Packages\com.arongranberg.astar\Drawing\changelog.cs" />
-    <Compile Include="Packages\com.arongranberg.astar\Drawing\Palette.cs" />
-    <Compile Include="Packages\com.arongranberg.astar\Drawing\AlineHDRPCustomPass.cs" />
-    <Compile Include="Packages\com.arongranberg.astar\Drawing\CommandBuilder2DExtensions.cs" />
-    <Compile Include="Packages\com.arongranberg.astar\Drawing\DrawingSettings.cs" />
-    <Compile Include="Packages\com.arongranberg.astar\Drawing\MonoBehaviourGizmos.cs" />
-    <Compile Include="Packages\com.arongranberg.astar\Drawing\DrawingData.cs" />
-    <Compile Include="Packages\com.arongranberg.astar\Drawing\SDFFont.cs" />
-    <Compile Include="Packages\com.arongranberg.astar\Drawing\CommandBuilder.cs" />
-    <Compile Include="Packages\com.arongranberg.astar\Drawing\StreamSplitter.cs" />
-    <Compile Include="Packages\com.arongranberg.astar\Drawing\PersistentFilter.cs" />
-    <Compile Include="Packages\com.arongranberg.astar\Drawing\DrawingUtilities.cs" />
-    <Compile Include="Packages\com.arongranberg.astar\Drawing\Draw.cs" />
-    <Compile Include="Packages\com.arongranberg.astar\Drawing\DrawingManager.cs" />
-    <Compile Include="Packages\com.arongranberg.astar\Drawing\CommandBuilderExtensions.cs" />
-    <Compile Include="Packages\com.arongranberg.astar\Drawing\AlineURPRenderPassFeature.cs" />
-    <Compile Include="Packages\com.arongranberg.astar\Drawing\GeometryBuilder.cs" />
-    <Compile Include="Packages\com.arongranberg.astar\Drawing\CommandBuilder2D.cs" />
-    <Compile Include="Packages\com.arongranberg.astar\Drawing\Compatibility.cs" />
+    <Compile Include="Assets\AstarPathfindingProject\Drawing\DrawingData.cs" />
+    <Compile Include="Assets\AstarPathfindingProject\Drawing\SDFFont.cs" />
+    <Compile Include="Assets\AstarPathfindingProject\Drawing\MonoBehaviourGizmos.cs" />
+    <Compile Include="Assets\AstarPathfindingProject\Drawing\DrawingManager.cs" />
+    <Compile Include="Assets\AstarPathfindingProject\Drawing\StreamSplitter.cs" />
+    <Compile Include="Assets\AstarPathfindingProject\Drawing\CommandBuilder.cs" />
+    <Compile Include="Assets\AstarPathfindingProject\Drawing\Compatibility.cs" />
+    <Compile Include="Assets\AstarPathfindingProject\Drawing\Draw.cs" />
+    <Compile Include="Assets\AstarPathfindingProject\Drawing\AlineHDRPCustomPass.cs" />
+    <Compile Include="Assets\AstarPathfindingProject\Drawing\GeometryBuilder.cs" />
+    <Compile Include="Assets\AstarPathfindingProject\Drawing\AlineURPRenderPassFeature.cs" />
+    <Compile Include="Assets\AstarPathfindingProject\Drawing\CommandBuilder2D.cs" />
+    <Compile Include="Assets\AstarPathfindingProject\Drawing\DrawingSettings.cs" />
+    <Compile Include="Assets\AstarPathfindingProject\Drawing\changelog.cs" />
+    <Compile Include="Assets\AstarPathfindingProject\Drawing\CommandBuilder2DExtensions.cs" />
+    <Compile Include="Assets\AstarPathfindingProject\Drawing\Palette.cs" />
+    <Compile Include="Assets\AstarPathfindingProject\Drawing\DrawingUtilities.cs" />
+    <Compile Include="Assets\AstarPathfindingProject\Drawing\PersistentFilter.cs" />
+    <Compile Include="Assets\AstarPathfindingProject\Drawing\CommandBuilderExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Packages\com.arongranberg.astar\Drawing\Resources\aline_common_line.cginc" />
-    <None Include="Packages\com.arongranberg.astar\Drawing\Resources\aline_text.shader" />
-    <None Include="Packages\com.arongranberg.astar\Drawing\Resources\aline_common_surface.cginc" />
-    <None Include="Packages\com.arongranberg.astar\Drawing\Resources\aline_common_text.cginc" />
-    <None Include="Packages\com.arongranberg.astar\Drawing\Resources\aline_common.cginc" />
-    <None Include="Packages\com.arongranberg.astar\Drawing\Resources\aline_outline.shader" />
-    <None Include="Packages\com.arongranberg.astar\Drawing\Resources\aline_surface.shader" />
-    <None Include="Packages\com.arongranberg.astar\Drawing\ALINE.asmdef" />
+    <None Include="Assets\AstarPathfindingProject\Drawing\Resources\aline_common_line.cginc" />
+    <None Include="Assets\AstarPathfindingProject\Drawing\Resources\aline_text.shader" />
+    <None Include="Assets\AstarPathfindingProject\Drawing\Resources\aline_common_surface.cginc" />
+    <None Include="Assets\AstarPathfindingProject\Drawing\Resources\aline_common_text.cginc" />
+    <None Include="Assets\AstarPathfindingProject\Drawing\Resources\aline_common.cginc" />
+    <None Include="Assets\AstarPathfindingProject\Drawing\Resources\aline_outline.shader" />
+    <None Include="Assets\AstarPathfindingProject\Drawing\Resources\aline_surface.shader" />
+    <None Include="Assets\AstarPathfindingProject\Drawing\ALINE.asmdef" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">

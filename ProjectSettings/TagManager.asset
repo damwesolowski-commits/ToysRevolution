@@ -3,7 +3,8 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 3
-  tags: []
+  tags:
+  - Ball
   layers:
   - Default
   - TransparentFX
@@ -11,13 +12,13 @@ TagManager:
   - ObstaclesHard
   - Water
   - UI
-  - Player
+  - Enemies
   - Ground
-  - Enemy
+  - Bridges
   - Interactable
   - Hazard
   - ObstaclesSoft
-  - 
+  - Clickable
   - 
   - 
   - 
@@ -43,6 +44,9 @@ TagManager:
     locked: 0
   - name: Ground
     uniqueID: 2180636123
+    locked: 0
+  - name: Bridges
+    uniqueID: 948241375
     locked: 0
   - name: Props
     uniqueID: 1245185347
