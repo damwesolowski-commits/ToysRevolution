@@ -82,7 +82,7 @@ SpriteRenderer:
   m_SortingLayerID: 1245185347
   m_SortingLayer: 3
   m_SortingOrder: 0
-  m_Sprite: {fileID: 1165327672033070530, guid: fdee452e73e35544bb5b53b503635d58, type: 3}
+  m_Sprite: {fileID: 21300000, guid: fdee452e73e35544bb5b53b503635d58, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -118,11 +118,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a097ab6cd7b01143a82016888cc17df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GreenButton
-  idleSprite: {fileID: 1165327672033070530, guid: fdee452e73e35544bb5b53b503635d58, type: 3}
-  pressedSprite: {fileID: -2764444567616181988, guid: 1fdfbed3050cd9349b9ede6aa6f63928, type: 3}
+  groupId: 0
+  idleSprite: {fileID: 21300000, guid: fdee452e73e35544bb5b53b503635d58, type: 3}
+  pressedSprite: {fileID: 21300000, guid: 1fdfbed3050cd9349b9ede6aa6f63928, type: 3}
   pressSound: {fileID: 0}
   releaseSound: {fileID: 0}
-  groupId: 0
 --- !u!114 &1983054741566335223
 MonoBehaviour:
   m_ObjectHideFlags: 0

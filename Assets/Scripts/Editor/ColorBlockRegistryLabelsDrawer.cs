@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEditor;
+using System.Linq;
 
 [InitializeOnLoad]
 public static class ColorBlockRegistryLabelsDrawer
@@ -13,7 +14,6 @@ public static class ColorBlockRegistryLabelsDrawer
     {
         Handles.BeginGUI();
 
-        // Pobierz kamerę sceny (potrzebna do przeliczania pozycji)
         Camera sceneCam = sceneView.camera;
         if (sceneCam == null)
         {
@@ -21,12 +21,9 @@ public static class ColorBlockRegistryLabelsDrawer
             return;
         }
 
-        // Pobieramy wszystkie ColorBlock i Buttons
         var blocks = Object.FindObjectsOfType<ColorBlock>();
-        var greenButtons = Object.FindObjectsOfType<GreenButton>();
-        var redButtons = Object.FindObjectsOfType<RedButton>();
+        var buttons = Object.FindObjectsOfType<ButtonBase>(); // <-- wszystkie typy przycisków
 
-        // Ustawienia stylu tekstu
         var style = new GUIStyle(EditorStyles.boldLabel)
         {
             alignment = TextAnchor.MiddleCenter,
@@ -34,40 +31,54 @@ public static class ColorBlockRegistryLabelsDrawer
             fontStyle = FontStyle.Bold
         };
 
-        // Rysujemy etykiety nad każdym obiektem
-        DrawLabels(blocks, sceneCam, style, Color.white);
-        DrawLabels(greenButtons, sceneCam, style, Color.green);
-        DrawLabels(redButtons, sceneCam, style, Color.red);
+        DrawBlockLabels(blocks, sceneCam, style);
+        DrawButtonLabels(buttons, sceneCam, style);
 
         Handles.EndGUI();
     }
 
-    private static void DrawLabels<T>(T[] objects, Camera cam, GUIStyle style, Color color) where T : Component
+    private static void DrawBlockLabels(ColorBlock[] objects, Camera cam, GUIStyle baseStyle)
     {
-        Handles.color = color;
-        style.normal.textColor = color;
-
         foreach (var obj in objects)
         {
             if (obj == null) continue;
-
-            int id = -1;
-            Vector3 worldPos = obj.transform.position + Vector3.up * 0.6f;
-
-            if (obj is ColorBlock cb)
-                id = cb.groupId;
-            else if (obj is GreenButton gb)
-                id = gb.groupId;
-            else if (obj is RedButton rb)
-                id = rb.groupId;
-
+            int id = obj.groupId;
             if (id < 0) continue;
 
-            // Zamiana współrzędnych świata na ekranowe
+            Vector3 worldPos = obj.transform.position + Vector3.up * 0.6f;
             Vector3 screenPos = cam.WorldToScreenPoint(worldPos);
-            if (screenPos.z < 0) continue; // za kamerą
+            if (screenPos.z < 0) continue;
 
-            // Rysujemy ID na ekranie
+            var style = new GUIStyle(baseStyle);
+            style.normal.textColor = Color.white;
+
+            Vector2 labelPos = new Vector2(screenPos.x, cam.pixelHeight - screenPos.y);
+            GUI.Label(new Rect(labelPos.x - 10, labelPos.y - 10, 40, 20), id.ToString(), style);
+        }
+    }
+
+    private static void DrawButtonLabels(ButtonBase[] objects, Camera cam, GUIStyle baseStyle)
+    {
+        foreach (var obj in objects)
+        {
+            if (obj == null) continue;
+            int id = obj.groupId;
+            if (id < 0) continue;
+
+            // Kolor wg nazwy klasy (Green... / Red...)
+            var typeName = obj.GetType().Name;
+            Color color = typeName.Contains("Green") ? Color.green
+                          : typeName.Contains("Red") ? Color.red
+                          : Color.yellow;
+
+            Vector3 worldPos = obj.transform.position + Vector3.up * 0.6f;
+            Vector3 screenPos = cam.WorldToScreenPoint(worldPos);
+            if (screenPos.z < 0) continue;
+
+            var style = new GUIStyle(baseStyle);
+            style.normal.textColor = color;
+            Handles.color = color;
+
             Vector2 labelPos = new Vector2(screenPos.x, cam.pixelHeight - screenPos.y);
             GUI.Label(new Rect(labelPos.x - 10, labelPos.y - 10, 40, 20), id.ToString(), style);
         }

@@ -6,7 +6,6 @@ using System.Linq;
 [CustomEditor(typeof(ColorBlockRegistryBase), true)]
 public class ColorBlockRegistryEditor : Editor
 {
-    // zapamiętujemy, które ID są rozwinięte
     private static Dictionary<int, bool> foldouts = new Dictionary<int, bool>();
 
     public override void OnInspectorGUI()
@@ -16,32 +15,41 @@ public class ColorBlockRegistryEditor : Editor
         GUILayout.Space(10);
         EditorGUILayout.LabelField("🔍 Grupy ID – podgląd i zaznaczanie", EditorStyles.boldLabel);
 
-        // Zbieramy obiekty z grupami
-        var blocks = FindObjectsOfType<ColorBlock>();
-        var greenButtons = FindObjectsOfType<GreenButton>();
-        var redButtons = FindObjectsOfType<RedButton>();
+        var registry = target as ColorBlockRegistryBase;
 
-        // mapujemy: ID -> lista obiektów
-        var byId = new Dictionary<int, List<Object>>();
+        var blocks = new List<ColorBlock>();
+        blocks.AddRange(FindObjectsOfType<ColorBlock>());
+
+        var allButtons = FindObjectsOfType<ButtonBase>();
+        var buttons = new List<ButtonBase>();
+
+        // ➜ Zbierz odpowiednie przyciski wg typu rejestru (po nazwie klasy)
+        if (registry is GreenBlockRegistry)
+            buttons.AddRange(allButtons.Where(b => b != null && b.GetType().Name.Contains("Green")));
+        else if (registry is RedBlockRegistry)
+            buttons.AddRange(allButtons.Where(b => b != null && b.GetType().Name.Contains("Red")));
+        else
+            buttons.AddRange(allButtons);
+
+        var byId = new Dictionary<int, List<GameObject>>();
 
         void Add<T>(IEnumerable<T> comps, System.Func<T, int> getId) where T : Component
         {
             foreach (var c in comps)
             {
+                if (c == null) continue;
                 int id = getId(c);
                 if (id < 0) continue;
+
                 if (!byId.TryGetValue(id, out var list))
-                {
-                    list = new List<Object>();
-                    byId[id] = list;
-                }
+                    byId[id] = list = new List<GameObject>();
+
                 list.Add(c.gameObject);
             }
         }
 
         Add(blocks, b => b.groupId);
-        Add(greenButtons, b => b.groupId);
-        Add(redButtons, b => b.groupId);
+        Add(buttons, b => b.groupId);
 
         if (byId.Count == 0)
         {
@@ -49,7 +57,6 @@ public class ColorBlockRegistryEditor : Editor
             return;
         }
 
-        // posortowane ID
         foreach (var kv in byId.OrderBy(k => k.Key))
         {
             int id = kv.Key;
@@ -69,7 +76,8 @@ public class ColorBlockRegistryEditor : Editor
             if (GUILayout.Button("Zaznacz wszystkie", GUILayout.Width(140)))
             {
                 SelectAndFrame(objects);
-                Debug.Log($"Zaznaczono {objects.Count} obiektów z grupy ID {id}");
+                foldouts[id] = true;
+                Repaint();
             }
 
             EditorGUILayout.EndHorizontal();
@@ -77,20 +85,14 @@ public class ColorBlockRegistryEditor : Editor
             if (foldouts[id])
             {
                 EditorGUI.indentLevel++;
-                // Lista każdego elementu osobno
                 for (int i = 0; i < objects.Count; i++)
                 {
-                    var go = objects[i] as GameObject;
-                    if (go == null) continue;
-
-                    EditorGUILayout.BeginHorizontal();
-
-                    // ścieżka w hierarchii + typ
+                    var go = objects[i];
                     string typeName = go.GetComponent<ColorBlock>() ? "ColorBlock"
-                                      : go.GetComponent<GreenButton>() ? "GreenButton"
-                                      : go.GetComponent<RedButton>() ? "RedButton"
+                                      : go.GetComponent<ButtonBase>() ? go.GetComponent<ButtonBase>().GetType().Name
                                       : "GameObject";
 
+                    EditorGUILayout.BeginHorizontal();
                     EditorGUILayout.LabelField($"{i + 1}. [{typeName}]  {GetHierarchyPath(go)}");
 
                     if (GUILayout.Button("Ping", GUILayout.Width(50)))
@@ -106,7 +108,7 @@ public class ColorBlockRegistryEditor : Editor
                     if (GUILayout.Button("Pokaż", GUILayout.Width(60)))
                     {
                         Selection.activeObject = go;
-                        FocusSceneView(true); // wycentruj kamerę na obiekcie
+                        FocusSceneView(true);
                     }
 
                     EditorGUILayout.EndHorizontal();
@@ -119,15 +121,12 @@ public class ColorBlockRegistryEditor : Editor
         }
 
         if (GUILayout.Button("🔄 Odśwież listę"))
-        {
-            // najprostsze odświeżenie: przebudowanie GUI
             Repaint();
-        }
     }
 
-    private static void SelectAndFrame(List<Object> objects)
+    private static void SelectAndFrame(List<GameObject> objects)
     {
-        Selection.objects = objects.ToArray();
+        Selection.objects = objects.Cast<UnityEngine.Object>().ToArray();
         foreach (var o in objects) EditorGUIUtility.PingObject(o);
         FocusSceneView(true);
     }
@@ -136,8 +135,7 @@ public class ColorBlockRegistryEditor : Editor
     {
         var sceneView = SceneView.lastActiveSceneView;
         if (sceneView == null) return;
-        if (frameSelection)
-            sceneView.FrameSelected();
+        if (frameSelection) sceneView.FrameSelected();
         sceneView.Repaint();
         SceneView.RepaintAll();
     }
@@ -146,11 +144,7 @@ public class ColorBlockRegistryEditor : Editor
     {
         var stack = new Stack<string>();
         var t = go.transform;
-        while (t != null)
-        {
-            stack.Push(t.name);
-            t = t.parent;
-        }
+        while (t != null) { stack.Push(t.name); t = t.parent; }
         return string.Join("/", stack);
     }
 }

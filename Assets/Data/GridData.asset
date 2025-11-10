@@ -575,6 +575,7 @@ MonoBehaviour:
   - {x: 38, y: -13}
   - {x: 39, y: -13}
   - {x: -40, y: -12}
+  - {x: -33, y: -12}
   - {x: -21, y: -12}
   - {x: -20, y: -12}
   - {x: -19, y: -12}
@@ -630,6 +631,7 @@ MonoBehaviour:
   - {x: 38, y: -12}
   - {x: 39, y: -12}
   - {x: -40, y: -11}
+  - {x: -33, y: -11}
   - {x: -21, y: -11}
   - {x: -20, y: -11}
   - {x: -19, y: -11}
@@ -685,6 +687,7 @@ MonoBehaviour:
   - {x: 38, y: -11}
   - {x: 39, y: -11}
   - {x: -40, y: -10}
+  - {x: -33, y: -10}
   - {x: -21, y: -10}
   - {x: -20, y: -10}
   - {x: -19, y: -10}
@@ -733,6 +736,7 @@ MonoBehaviour:
   - {x: 38, y: -10}
   - {x: 39, y: -10}
   - {x: -40, y: -9}
+  - {x: -33, y: -9}
   - {x: -21, y: -9}
   - {x: -20, y: -9}
   - {x: -19, y: -9}
@@ -3193,7 +3197,6 @@ MonoBehaviour:
   - {x: -36, y: -12}
   - {x: -35, y: -12}
   - {x: -34, y: -12}
-  - {x: -33, y: -12}
   - {x: -32, y: -12}
   - {x: -31, y: -12}
   - {x: -30, y: -12}
@@ -3213,7 +3216,6 @@ MonoBehaviour:
   - {x: -11, y: -12}
   - {x: -39, y: -11}
   - {x: -34, y: -11}
-  - {x: -33, y: -11}
   - {x: -28, y: -11}
   - {x: -27, y: -11}
   - {x: -22, y: -11}
@@ -3226,7 +3228,6 @@ MonoBehaviour:
   - {x: -11, y: -11}
   - {x: -39, y: -10}
   - {x: -34, y: -10}
-  - {x: -33, y: -10}
   - {x: -28, y: -10}
   - {x: -27, y: -10}
   - {x: -22, y: -10}
@@ -3246,7 +3247,6 @@ MonoBehaviour:
   - {x: 0, y: -10}
   - {x: -39, y: -9}
   - {x: -34, y: -9}
-  - {x: -33, y: -9}
   - {x: -28, y: -9}
   - {x: -27, y: -9}
   - {x: -22, y: -9}
@@ -11868,6 +11868,20 @@ MonoBehaviour:
     arrowDirection: {x: 0, y: 0}
     cost: 1
     button: {fileID: 0}
+  - position: {x: -33, y: -12}
+    walkable: 1
+    isObstacleHard: 0
+    isObstacleSoft: 0
+    isDeadly: 1
+    isSlippery: 0
+    isBridge: 0
+    isSwitch: 0
+    isSpecial: 0
+    isArrow: 0
+    isSpike: 0
+    arrowDirection: {x: 0, y: 0}
+    cost: 1
+    button: {fileID: 0}
   - position: {x: -21, y: -12}
     walkable: 1
     isObstacleHard: 0
@@ -12625,6 +12639,20 @@ MonoBehaviour:
     cost: 1
     button: {fileID: 0}
   - position: {x: -40, y: -11}
+    walkable: 1
+    isObstacleHard: 0
+    isObstacleSoft: 0
+    isDeadly: 1
+    isSlippery: 0
+    isBridge: 0
+    isSwitch: 0
+    isSpecial: 0
+    isArrow: 0
+    isSpike: 0
+    arrowDirection: {x: 0, y: 0}
+    cost: 1
+    button: {fileID: 0}
+  - position: {x: -33, y: -11}
     walkable: 1
     isObstacleHard: 0
     isObstacleSoft: 0
@@ -13408,6 +13436,20 @@ MonoBehaviour:
     arrowDirection: {x: 0, y: 0}
     cost: 1
     button: {fileID: 0}
+  - position: {x: -33, y: -10}
+    walkable: 1
+    isObstacleHard: 0
+    isObstacleSoft: 0
+    isDeadly: 1
+    isSlippery: 0
+    isBridge: 0
+    isSwitch: 0
+    isSpecial: 0
+    isArrow: 0
+    isSpike: 0
+    arrowDirection: {x: 0, y: 0}
+    cost: 1
+    button: {fileID: 0}
   - position: {x: -21, y: -10}
     walkable: 1
     isObstacleHard: 0
@@ -14067,6 +14109,20 @@ MonoBehaviour:
     cost: 1
     button: {fileID: 0}
   - position: {x: -40, y: -9}
+    walkable: 1
+    isObstacleHard: 0
+    isObstacleSoft: 0
+    isDeadly: 1
+    isSlippery: 0
+    isBridge: 0
+    isSwitch: 0
+    isSpecial: 0
+    isArrow: 0
+    isSpike: 0
+    arrowDirection: {x: 0, y: 0}
+    cost: 1
+    button: {fileID: 0}
+  - position: {x: -33, y: -9}
     walkable: 1
     isObstacleHard: 0
     isObstacleSoft: 0
@@ -43887,7 +43943,7 @@ MonoBehaviour:
     cost: 1
     button: {fileID: 0}
   - position: {x: -30, y: -21}
-    walkable: 1
+    walkable: 0
     isObstacleHard: 0
     isObstacleSoft: 0
     isDeadly: 0
@@ -43895,7 +43951,7 @@ MonoBehaviour:
     isBridge: 0
     isSwitch: 0
     isSpecial: 0
-    isArrow: 0
+    isArrow: 1
     isSpike: 0
     arrowDirection: {x: 0, y: 0}
     cost: 1
@@ -47373,7 +47429,7 @@ MonoBehaviour:
     cost: 1
     button: {fileID: 0}
   - position: {x: -33, y: -15}
-    walkable: 0
+    walkable: 1
     isObstacleHard: 0
     isObstacleSoft: 0
     isDeadly: 0
@@ -47381,7 +47437,7 @@ MonoBehaviour:
     isBridge: 0
     isSwitch: 0
     isSpecial: 0
-    isArrow: 1
+    isArrow: 0
     isSpike: 0
     arrowDirection: {x: 0, y: 0}
     cost: 1
@@ -47415,7 +47471,7 @@ MonoBehaviour:
     cost: 1
     button: {fileID: 0}
   - position: {x: -30, y: -15}
-    walkable: 1
+    walkable: 0
     isObstacleHard: 0
     isObstacleSoft: 0
     isDeadly: 0
@@ -47423,7 +47479,7 @@ MonoBehaviour:
     isBridge: 0
     isSwitch: 0
     isSpecial: 0
-    isArrow: 0
+    isArrow: 1
     isSpike: 0
     arrowDirection: {x: 0, y: 0}
     cost: 1
@@ -48520,20 +48576,6 @@ MonoBehaviour:
     arrowDirection: {x: 0, y: 0}
     cost: 1
     button: {fileID: 0}
-  - position: {x: -33, y: -12}
-    walkable: 1
-    isObstacleHard: 0
-    isObstacleSoft: 0
-    isDeadly: 0
-    isSlippery: 0
-    isBridge: 0
-    isSwitch: 0
-    isSpecial: 0
-    isArrow: 0
-    isSpike: 0
-    arrowDirection: {x: 0, y: 0}
-    cost: 1
-    button: {fileID: 0}
   - position: {x: -32, y: -12}
     walkable: 1
     isObstacleHard: 0
@@ -48800,20 +48842,6 @@ MonoBehaviour:
     arrowDirection: {x: 0, y: 0}
     cost: 1
     button: {fileID: 0}
-  - position: {x: -33, y: -11}
-    walkable: 1
-    isObstacleHard: 0
-    isObstacleSoft: 0
-    isDeadly: 0
-    isSlippery: 0
-    isBridge: 0
-    isSwitch: 0
-    isSpecial: 0
-    isArrow: 0
-    isSpike: 0
-    arrowDirection: {x: 0, y: 0}
-    cost: 1
-    button: {fileID: 0}
   - position: {x: -28, y: -11}
     walkable: 1
     isObstacleHard: 0
@@ -48969,20 +48997,6 @@ MonoBehaviour:
     cost: 1
     button: {fileID: 0}
   - position: {x: -34, y: -10}
-    walkable: 1
-    isObstacleHard: 0
-    isObstacleSoft: 0
-    isDeadly: 0
-    isSlippery: 0
-    isBridge: 0
-    isSwitch: 0
-    isSpecial: 0
-    isArrow: 0
-    isSpike: 0
-    arrowDirection: {x: 0, y: 0}
-    cost: 1
-    button: {fileID: 0}
-  - position: {x: -33, y: -10}
     walkable: 1
     isObstacleHard: 0
     isObstacleSoft: 0
@@ -49249,20 +49263,6 @@ MonoBehaviour:
     cost: 1
     button: {fileID: 0}
   - position: {x: -34, y: -9}
-    walkable: 1
-    isObstacleHard: 0
-    isObstacleSoft: 0
-    isDeadly: 0
-    isSlippery: 0
-    isBridge: 0
-    isSwitch: 0
-    isSpecial: 0
-    isArrow: 0
-    isSpike: 0
-    arrowDirection: {x: 0, y: 0}
-    cost: 1
-    button: {fileID: 0}
-  - position: {x: -33, y: -9}
     walkable: 1
     isObstacleHard: 0
     isObstacleSoft: 0
@@ -49543,7 +49543,7 @@ MonoBehaviour:
     cost: 1
     button: {fileID: 0}
   - position: {x: -33, y: -8}
-    walkable: 1
+    walkable: 0
     isObstacleHard: 0
     isObstacleSoft: 0
     isDeadly: 0
@@ -49551,7 +49551,7 @@ MonoBehaviour:
     isBridge: 0
     isSwitch: 0
     isSpecial: 0
-    isArrow: 0
+    isArrow: 1
     isSpike: 0
     arrowDirection: {x: 0, y: 0}
     cost: 1

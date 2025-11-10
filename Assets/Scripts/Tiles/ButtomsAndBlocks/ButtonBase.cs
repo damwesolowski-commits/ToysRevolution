@@ -97,18 +97,18 @@ public abstract class ButtonBase : MonoBehaviour
     {
         if (blockRegistry == null)
         {
-            Debug.LogWarning($"[{name}] Brak przypisanego rejestru bloków!");
+            //Debug.LogWarning($"[{name}] Brak przypisanego rejestru bloków!");
             return;
         }
 
         bool groupExtended = blockRegistry.IsGroupExtended(groupId);
         blockRegistry.ToggleGroup(groupId);
-        Debug.Log($"[{name}] Zmieniono stan grupy {groupId} na {(!groupExtended ? "wysunięty" : "schowany")}");
+        //Debug.Log($"[{name}] Zmieniono stan grupy {groupId} na {(!groupExtended ? "wysunięty" : "schowany")}");
     }
 
     protected virtual void OnReleased(GameObject unit)
     {
-        Debug.Log($"[{name}] Zwolniono przycisk grupy {groupId}");
+        //Debug.Log($"[{name}] Zwolniono przycisk grupy {groupId}");
     }
     private void Update()
     {

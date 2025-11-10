@@ -204,7 +204,7 @@ public class RollingBall : MonoBehaviour
                     if (hp != null)
                     {
                         hp.TakeDamage(hp.MaxHP);
-                        Debug.Log("💥 Kula zabiła gracza logicznie (Tile match).");
+                       // Debug.Log("💥 Kula zabiła gracza logicznie (Tile match).");
                     }
                 }
             }
@@ -219,7 +219,7 @@ public class RollingBall : MonoBehaviour
                 if (hp2 != null)
                 {
                     hp2.TakeDamage(hp2.MaxHP);
-                    Debug.Log("⚠️ Kula zabiła jednostkę po wejściu na to samo pole (strzałka).");
+                   // Debug.Log("⚠️ Kula zabiła jednostkę po wejściu na to samo pole (strzałka).");
                 }
             }
 
@@ -242,7 +242,7 @@ public class RollingBall : MonoBehaviour
 
     private void DestroyBall(string reason)
     {
-        Debug.Log($"💥 Kula zniszczona: {reason}");
+       // Debug.Log($"💥 Kula zniszczona: {reason}");
         Destroy(gameObject);
     }
 }

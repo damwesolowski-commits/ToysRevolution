@@ -13,14 +13,18 @@ public abstract class ColorBlockRegistryBase : MonoBehaviour
         var blocks = GetBlocksByGroup(id);
         if (blocks == null || blocks.Count == 0)
         {
-            Debug.LogWarning($"[{GetType().Name}] Nie znaleziono żadnych bloków o ID {id}");
+            //Debug.LogWarning($"[{GetType().Name}] Nie znaleziono żadnych bloków o ID {id}");
             return;
         }
 
         foreach (var block in blocks)
-            block.SetState(!block.IsExtended);
+        {
+            bool newState = !block.IsExtended;
+            block.SetState(newState, initialize: false);
+            Debug.Log($"[{GetType().Name}] Zmieniono stan bloku {block.name} → {(newState ? "WYSUNIĘTY" : "SCHOWANY")}");
+        }
 
-        Debug.Log($"[{GetType().Name}] Przełączono (toggle) grupę {id} ({blocks.Count} bloków)");
+        //Debug.Log($"[{GetType().Name}] Przełączono (toggle) grupę {id} ({blocks.Count} bloków)");
     }
 
     public bool IsGroupExtended(int id)

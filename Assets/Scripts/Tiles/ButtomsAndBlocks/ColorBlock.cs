@@ -107,17 +107,64 @@ public class ColorBlock : MonoBehaviour
             TileLogicManager.Instance.gridData.SetCell(gridPos, cellData);
         }
 
-        cellData.isObstacleHard = isExtended;
-        cellData.walkable = !isExtended;
+        // --- LOGIKA ZALEŻNA OD TYPU BLOKU ---
+        switch (blockType)
+        {
+            case BlockType.Bridge:
+                // Most: zawsze przechodni, ale tylko gdy wysunięty — neutralizuje deadly tiles
+                cellData.walkable = true;
+                cellData.isObstacleHard = false;
+                cellData.isDeadly = false;
+                cellData.isBridge = isExtended;
 
-        // 🔹 Jeśli ten klocek to deadly, ustaw to w gridData
-        cellData.isDeadly = (isExtended && blockType == BlockType.Deadly);
+                // 🔹 Neutralizuj deadly tiles tylko gdy most wysunięty
+                if (TileLogicManager.Instance != null)
+                    TileLogicManager.Instance.SetTileNeutralized(transform.position, isExtended);
+                break;
+
+            case BlockType.Deadly:
+                cellData.walkable = !isExtended;
+                cellData.isObstacleHard = isExtended;
+                cellData.isDeadly = isExtended;
+                cellData.isBridge = false;
+
+                // ❌ deadly blok nigdy nie neutralizuje
+                if (TileLogicManager.Instance != null)
+                    TileLogicManager.Instance.SetTileNeutralized(transform.position, false);
+                break;
+
+            default: // BlockType.Normal
+                cellData.walkable = !isExtended;
+                cellData.isObstacleHard = isExtended;
+                cellData.isDeadly = false;
+                cellData.isBridge = false;
+
+                if (TileLogicManager.Instance != null)
+                    TileLogicManager.Instance.SetTileNeutralized(transform.position, false);
+                break;
+        }
+
         TileLogicManager.Instance.gridData.SetCell(gridPos, cellData);
     }
 
     private void UpdateAstar()
     {
-        if (AstarPath.active == null) return;
+        if (AstarPath.active == null || TileLogicManager.Instance == null) return;
+
+        // Zgodnie z tym, co zapisaliśmy w gridData:
+        bool walkableForAstar = true;
+        switch (blockType)
+        {
+            case BlockType.Bridge:
+                walkableForAstar = isExtended;    // most przechodni tylko gdy wysunięty
+                break;
+            case BlockType.Deadly:
+                walkableForAstar = !isExtended;
+                break;
+            default:
+                walkableForAstar = !isExtended;
+                break;
+        }
 
         Vector3 worldCenter = TileLogicManager.Instance.groundTilemap.CellToWorld(
             new Vector3Int(gridPos.x, gridPos.y, 0)
@@ -128,7 +175,7 @@ public class ColorBlock : MonoBehaviour
         {
             updatePhysics = false,
             modifyWalkability = true,
-            setWalkability = !isExtended
+            setWalkability = walkableForAstar
         };
 
         AstarPath.active.UpdateGraphs(guo);

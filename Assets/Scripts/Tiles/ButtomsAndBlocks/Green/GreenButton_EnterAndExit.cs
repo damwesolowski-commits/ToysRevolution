@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 
-public class RedButton : ButtonBase
+public class GreenButton_EnterAndExit : ButtonBase
 {
-    private RedBlockRegistry redBlockRegistry;
+    private GreenBlockRegistry greenBlockRegistry;
 
     private bool isToggled = false;
 
@@ -10,6 +10,6 @@ public class RedButton : ButtonBase
     {
         base.Awake();
         if (blockRegistry == null)
-            blockRegistry = FindObjectOfType<RedBlockRegistry>();
+            blockRegistry = FindObjectOfType<GreenBlockRegistry>();
     }
 }
