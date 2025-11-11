@@ -49,7 +49,7 @@ public abstract class ButtonBase : MonoBehaviour
         }
     }
 
-    public void HandleUnitStepOff(GameObject unit)
+    public virtual void HandleUnitStepOff(GameObject unit)
     {
         if (unit == null) return;
         if (occupants.Contains(unit))
@@ -121,7 +121,10 @@ public abstract class ButtonBase : MonoBehaviour
             }
         }
 
-        // 🔹 Jeśli przycisk był wciśnięty, a lista jest już pusta — odkliknij
+        // 🔹 Nie cofaj wizualnie przycisków, które są zablokowane (np. DoubleShiftButton)
+        if (this is DoubleShiftButton)
+            return;
+
         if (occupants.Count == 0 && spriteRenderer != null && spriteRenderer.sprite == pressedSprite)
         {
             SetPressedVisuals(false);

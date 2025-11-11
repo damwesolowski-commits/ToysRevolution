@@ -70,6 +70,7 @@
     <Compile Include="Assets\Scripts\Inventory\PlayerInventory.cs" />
     <Compile Include="Assets\Scripts\Tiles\ButtomsAndBlocks\Red\RedButton_EnterAndExit.cs" />
     <Compile Include="Assets\Scripts\Tiles\ButtomsAndBlocks\Brown\BrownBlockRegistry.cs" />
+    <Compile Include="Assets\Scripts\Tiles\ButtomsAndBlocks\PinkPurple\PinkPurpleBlock.cs" />
     <Compile Include="Assets\Scripts\Tiles\ButtomsAndBlocks\Gray\MultiPlayerButton.cs" />
     <Compile Include="Assets\Scripts\Tiles\ButtomsAndBlocks\Red\RedButton_EnterAndStay.cs" />
     <Compile Include="Assets\Scripts\Tiles\ButtomsAndBlocks\ButtonRegister.cs" />
@@ -81,13 +82,15 @@
     <Compile Include="Assets\Scripts\Tiles\TileLogicManager.cs" />
     <Compile Include="Assets\Scripts\Entities\Player\ClickToMove2D.cs" />
     <Compile Include="Assets\Scripts\System\Input\TileCursorController.cs" />
-    <Compile Include="Assets\Scripts\Tiles\ButtomsAndBlocks\Green\GreenButton_EnterAndStay.cs" />
     <Compile Include="Assets\Scripts\Tiles\ButtomsAndBlocks\Green\GreenBlock.cs" />
+    <Compile Include="Assets\Scripts\Tiles\ButtomsAndBlocks\Green\GreenButton_EnterAndStay.cs" />
     <Compile Include="Assets\Scripts\Tiles\ButtomsAndBlocks\Brown\BrownBlock.cs" />
     <Compile Include="Assets\Scripts\Tiles\ButtomsAndBlocks\Blue\BlueButton_EnterAndStay.cs" />
     <Compile Include="Assets\Scripts\Entities\Shared\UnitDeathHandler.cs" />
+    <Compile Include="Assets\Scripts\Tiles\ButtomsAndBlocks\PinkPurple\DoubleShiftButton.cs" />
     <Compile Include="Assets\Scripts\System\Input\CameraController.cs" />
     <Compile Include="Assets\Scripts\Entities\Shared\HealthBar.cs" />
+    <Compile Include="Assets\Scripts\Tiles\ButtomsAndBlocks\PinkPurple\PinkPurpleBlockRegistry.cs" />
     <Compile Include="Assets\Scripts\Tiles\BridgeFalling.cs" />
     <Compile Include="Assets\Scripts\System\Selection\RingPulseEffect.cs" />
     <Compile Include="Assets\Scripts\Tiles\ButtomsAndBlocks\Blue\BlueBlockRegistry.cs" />
