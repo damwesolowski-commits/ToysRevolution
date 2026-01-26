@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7266088595912075726}
   - component: {fileID: 5393789087662495651}
   - component: {fileID: 5546005162582435795}
-  - component: {fileID: -5805719379398107478}
+  - component: {fileID: -7470516729091485207}
   m_Layer: 3
   m_Name: RedBlock_Up 1
   m_TagString: Untagged
@@ -87,7 +87,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1.060606}
+  m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -203,7 +203,7 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &-5805719379398107478
+--- !u!114 &-7470516729091485207
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -216,7 +216,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RedBlock
   groupId: 0
-  blockType: 1
+  blockType: 0
   isExtendedAtStart: 1
   extendedSprite: {fileID: 21300000, guid: 34e9fdf9c4acb694cafd00a8949b6d9e, type: 3}
   hiddenSprite: {fileID: 21300000, guid: e5451556698f9ff4fb7262e35701907a, type: 3}

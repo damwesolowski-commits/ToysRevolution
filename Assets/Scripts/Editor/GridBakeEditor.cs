@@ -36,6 +36,7 @@ public class GridBakeEditor : EditorWindow
             bool isSwitch = name.Contains("switches");
             bool isOther = name.Contains("other");
             bool isDecor = name.Contains("decor");
+            bool isBuildField = name.Contains("build");
 
             if (isDecor)
                 continue; // pomijamy czysto wizualne warstwy
@@ -120,6 +121,13 @@ public class GridBakeEditor : EditorWindow
                 {
                     cell.walkable = true;
                     walkable++;
+                }
+
+                // Build Fields
+                if (isBuildField)
+                {
+                    cell.walkable = true;
+                    cell.isBuildField = true;
                 }
 
                 // Rezerwacja dla przyszłych Arrows (jeszcze bez implementacji)

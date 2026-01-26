@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &783259420993147303
+--- !u!1 &8699375702108593443
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,11 +8,11 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 6586935640346995883}
-  - component: {fileID: 2742007373682386722}
-  - component: {fileID: -6328599608544496676}
-  - component: {fileID: 7317782142219741141}
-  - component: {fileID: 7165148225694487165}
+  - component: {fileID: 6045976848474866017}
+  - component: {fileID: 1055420435510427257}
+  - component: {fileID: -5371093552684716743}
+  - component: {fileID: -2912099434697757059}
+  - component: {fileID: -1849484616612482898}
   m_Layer: 0
   m_Name: PinkPurpleButton_Sprite
   m_TagString: Untagged
@@ -20,13 +20,13 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &6586935640346995883
+--- !u!4 &6045976848474866017
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 783259420993147303}
+  m_GameObject: {fileID: 8699375702108593443}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -35,13 +35,13 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!212 &2742007373682386722
+--- !u!212 &1055420435510427257
 SpriteRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 783259420993147303}
+  m_GameObject: {fileID: 8699375702108593443}
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
@@ -93,42 +93,42 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &-6328599608544496676
+--- !u!114 &-5371093552684716743
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 783259420993147303}
+  m_GameObject: {fileID: 8699375702108593443}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6dce84da1133b6e489d62e5884e0f076, type: 3}
+  m_Script: {fileID: 11500000, guid: a841939287db15344a86c77674f85bc1, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DoubleShiftButton
+  m_EditorClassIdentifier: Assembly-CSharp::DoubleShiftButtonIdle
   groupId: 0
   idleSprite: {fileID: 21300000, guid: 1cb0a19591eac4d4892f86bb8c40dd13, type: 3}
   pressedSprite: {fileID: 21300000, guid: 7d9cbacde39805b49a0994e3a1e2d545, type: 3}
   pressSound: {fileID: 0}
   releaseSound: {fileID: 0}
---- !u!114 &7317782142219741141
+--- !u!114 &-2912099434697757059
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 783259420993147303}
+  m_GameObject: {fileID: 8699375702108593443}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8d7c1dbd6836c5649841f23e00de4f75, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ButtonRegister
---- !u!114 &7165148225694487165
+--- !u!114 &-1849484616612482898
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 783259420993147303}
+  m_GameObject: {fileID: 8699375702108593443}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 01f8a039457121e45b78568a5aa5e137, type: 3}

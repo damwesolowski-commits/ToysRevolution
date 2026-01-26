@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Tilemaps;
 
 [RequireComponent(typeof(SpriteRenderer))]
 [RequireComponent(typeof(BoxCollider2D))]
@@ -19,10 +20,12 @@ public class BridgeFalling : MonoBehaviour
     private float timer = 0f;
 
     private TileLogicManager tileLogic;
+    private GraphPenaltySetter graphPenaltySetter;
 
     void Start()
     {
         tileLogic = TileLogicManager.Instance;
+        graphPenaltySetter = GraphPenaltySetter.Instance;
 
         // 🔹 Ustal pozycję mostu na siatce
         Vector3Int bridgeCell = tileLogic.groundTilemap.WorldToCell(transform.position);
@@ -54,23 +57,10 @@ public class BridgeFalling : MonoBehaviour
             cell.isDeadly = false;
         }
 
-        // 🔹 Aktualizacja A* GridGraph
-        var gridGraph = AstarPath.active.data.gridGraph;
-        if (gridGraph != null)
-        {
-            var nodeInfo = gridGraph.GetNearest(new Vector3(bridgeCell.x + 0.5f, bridgeCell.y + 0.5f, 0));
-            var node = nodeInfo.node;
-            if (node != null)
-            {
-                node.Walkable = true;
-                node.Penalty = 0;
-            }
+        // 🔹 Zneutralizuj wodę pod prefabem mostu (dla pathfindingu i logiki)
+        tileLogic.SetTileNeutralized(transform.position, true);
 
-            // pełne odświeżenie grafu po zmianach
-            AstarPath.active.Scan();
-        }
-
-        Debug.Log($"🌉 Most dodany do GridData i zarejestrowany jako przechodni ({transform.position})");
+        //Debug.Log($"🌉 Most dodany do GridData i zarejestrowany jako przechodni ({transform.position})");
     }
 
     void Update()
@@ -95,6 +85,7 @@ public class BridgeFalling : MonoBehaviour
     {
         Vector3Int bridgeCell = tileLogic.groundTilemap.WorldToCell(transform.position);
 
+        // 🟦 Player
         foreach (var player in GameObject.FindGameObjectsWithTag("Player"))
         {
             Vector3Int playerCell = tileLogic.groundTilemap.WorldToCell(player.transform.position);
@@ -102,6 +93,15 @@ public class BridgeFalling : MonoBehaviour
                 return true;
         }
 
+        // 🔴 Enemy
+        foreach (var enemy in GameObject.FindGameObjectsWithTag("Enemy"))
+        {
+            Vector3Int enemyCell = tileLogic.groundTilemap.WorldToCell(enemy.transform.position);
+            if (enemyCell == bridgeCell)
+                return true;
+        }
+
+        // 🔵 Ball (kula)
         foreach (var ball in GameObject.FindGameObjectsWithTag("Ball"))
         {
             Vector3Int ballCell = tileLogic.groundTilemap.WorldToCell(ball.transform.position);
@@ -109,8 +109,17 @@ public class BridgeFalling : MonoBehaviour
                 return true;
         }
 
+        // 🟫 Box (skrzynia)
+        foreach (var chest in GameObject.FindGameObjectsWithTag("Chest"))
+        {
+            Vector3Int chestCell = tileLogic.groundTilemap.WorldToCell(chest.transform.position);
+            if (chestCell == bridgeCell)
+                return true;
+        }
+
         return false;
     }
+
 
     private void StartCollapse()
     {
@@ -123,12 +132,15 @@ public class BridgeFalling : MonoBehaviour
         if (crumbleSound != null)
             crumbleSound.Play();
 
-        Debug.Log($"⏳ Most zaczyna się zapadać ({name})");
+        //Debug.Log($"⏳ Most zaczyna się zapadać ({name})");
     }
 
     private void Collapse()
     {
         isCollapsed = true;
+
+        // 🔹 przywróć normalny stan pola – już nie jest neutralizowane przez most
+        tileLogic.SetTileNeutralized(transform.position, false);
 
         if (animator != null)
             animator.SetTrigger("Collapse");
@@ -146,6 +158,12 @@ public class BridgeFalling : MonoBehaviour
             cell.isBridge = false;
         }
 
+        // 🔹 Po zmianie logiki pola (most znika, deadly wraca) przelicz karę za ruch
+        if (GraphPenaltySetter.Instance != null)
+        {
+            GraphPenaltySetter.Instance.RefreshPenaltyAtPosition(transform.position);
+        }
+
         // 🔹 Zniszcz jednostki, które stoją na moście
         Vector2 size = new Vector2(0.9f, 0.9f);
         var hits = Physics2D.OverlapBoxAll(transform.position, size, 0f);
@@ -157,13 +175,25 @@ public class BridgeFalling : MonoBehaviour
             }
         }
 
+        // 🟫 Sprawdź skrzynie na tym samym polu co most (bez użycia fizyki)
+        Vector3Int bridgeCell = tileLogic.groundTilemap.WorldToCell(transform.position);
+
+        foreach (var chest in GameObject.FindGameObjectsWithTag("Chest"))
+        {
+            Vector3Int chestCell = tileLogic.groundTilemap.WorldToCell(chest.transform.position);
+            if (chestCell == bridgeCell)
+            {
+                TileLogicManager.Instance.HandleUnitOnTile(chest);
+            }
+        }
+
         // 🔹 Zamień sprite na „zawalony most” (ustawiany w prefabie)
         if (sr != null && brokenSprite != null)
         {
             sr.enabled = true;
             sr.sprite = brokenSprite;
         }
-        Debug.Log($"💥 Most {name} zawalił się!");
+        //Debug.Log($"💥 Most {name} zawalił się!");
     }
 
     public void TriggerCollapse()

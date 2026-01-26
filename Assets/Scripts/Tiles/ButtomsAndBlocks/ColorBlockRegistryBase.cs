@@ -4,7 +4,7 @@ using System.Linq;
 
 public abstract class ColorBlockRegistryBase : MonoBehaviour
 {
-    public List<ColorBlock> allBlocks = new List<ColorBlock>();
+    protected List<ColorBlock> allBlocks = new List<ColorBlock>();
     public abstract List<ColorBlock> GetBlocksByGroup(int id);
 
     // 🔹 Przełączanie grupy (nowa wersja)
@@ -21,7 +21,7 @@ public abstract class ColorBlockRegistryBase : MonoBehaviour
         {
             bool newState = !block.IsExtended;
             block.SetState(newState, initialize: false);
-            Debug.Log($"[{GetType().Name}] Zmieniono stan bloku {block.name} → {(newState ? "WYSUNIĘTY" : "SCHOWANY")}");
+            //Debug.Log($"[{GetType().Name}] Zmieniono stan bloku {block.name} → {(newState ? "WYSUNIĘTY" : "SCHOWANY")}");
         }
 
         //Debug.Log($"[{GetType().Name}] Przełączono (toggle) grupę {id} ({blocks.Count} bloków)");

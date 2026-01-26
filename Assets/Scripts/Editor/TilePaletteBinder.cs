@@ -11,14 +11,17 @@ public static class TilePaletteBinder
     {
         ("Ground", "Ground"),
         ("Obstacles_Hard", "Obstacles hard"),
+        ("ObstaclesHardDebug", "ObstaclesHardDebug"),
         ("Obstacles_Soft", "Obstacles soft"),
+        ("ObstaclesSoftDebug", "ObstaclesSoftDebug"),
         ("Deadly", "Deadly"),
         ("Slippery", "Slippery"),
         ("Bridges", "Bridges"),
         ("Arrows", "Arrows"),
-        ("Switchers", "Switchers"),
+        ("Switches", "Switches"),
         ("Other", "Other"),
         ("Decor", "Decor"),
+        ("BuildFields", "BuildFields"),
     };
 
     static TilePaletteBinder()

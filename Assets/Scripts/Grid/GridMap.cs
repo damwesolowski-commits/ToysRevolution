@@ -4,6 +4,8 @@ using UnityEngine.Tilemaps;
 
 public class GridMap : MonoBehaviour
 {
+    public static GridMap Instance { get; private set; }
+
     [Header("Tilemapy")]
     public Tilemap groundTilemap;       // kafelki po których można chodzić
     public Tilemap obstacleTilemap;     // kafelki blokujące ruch
@@ -29,6 +31,14 @@ public class GridMap : MonoBehaviour
 
     void Awake()
     {
+        // Singleton – żeby GridMap.Instance działało
+        if (Instance != null && Instance != this)
+        {
+            Debug.LogWarning("W scenie jest więcej niż jeden GridMap – używam pierwszego.");
+            return;
+        }
+        Instance = this;
+
         if (gridData == null)
             Debug.LogError("❌ Brak przypisanego GridData! Upewnij się, że bake został wykonany.");
         else
@@ -43,6 +53,41 @@ public class GridMap : MonoBehaviour
             return cell.walkable;
         return false;
     }
+
+    // 🔹 Zwraca dane komórki na podstawie współrzędnych siatki
+    public GridData.CellData GetCellData(Vector3Int cell)
+    {
+        if (gridData == null) return null;
+        Vector2Int pos = new Vector2Int(cell.x, cell.y);
+        return gridData.GetCell(pos);
+    }
+
+    // 🔹 Konwersja ze świata na komórkę
+    public Vector3Int WorldToCell(Vector3 worldPos)
+    {
+        if (groundTilemap != null)
+            return groundTilemap.WorldToCell(worldPos);
+
+        // awaryjnie
+        return Vector3Int.RoundToInt(worldPos);
+    }
+
+    // 🔹 Konwersja z komórki na środek kafelka w świecie
+    public Vector3 CellToWorld(Vector3Int cell)
+    {
+        if (groundTilemap != null)
+            return groundTilemap.GetCellCenterWorld(cell);
+
+        // awaryjnie
+        return (Vector3)cell;
+    }
+
+    // 🔹 Prosta nakładka na system rezerwacji
+    public void ReserveCell(Vector3Int cell, Object owner)
+    {
+        TryReserveTile(cell, owner);
+    }
+
 
     // ==========================
     //  FUNKCJE ZAJĘTOŚCI

@@ -194,8 +194,8 @@
     <Compile Include="Assets\AstarPathfindingProject\Graphs\Navmesh\Voxels\LinkedVoxelField.cs" />
     <Compile Include="Assets\AstarPathfindingProject\Graphs\Grid\GridGraphScanData.cs" />
     <Compile Include="Assets\AstarPathfindingProject\Modifiers\RaycastModifier.cs" />
-    <Compile Include="Assets\AstarPathfindingProject\Core\Serialization\JsonSerializer.cs" />
     <Compile Include="Assets\AstarPathfindingProject\Graphs\Nodes\PointNode.cs" />
+    <Compile Include="Assets\AstarPathfindingProject\Core\Serialization\JsonSerializer.cs" />
     <Compile Include="Assets\AstarPathfindingProject\Core\Serialization\SimpleZipReplacement.cs" />
     <Compile Include="Assets\AstarPathfindingProject\Graphs\Grid\Rules\RuleElevationPenalty.cs" />
     <Compile Include="Assets\AstarPathfindingProject\Core\Sync\Promise.cs" />

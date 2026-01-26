@@ -18,10 +18,14 @@ public class GridData : ScriptableObject, ISerializationCallbackReceiver
         public bool isSpecial;
         public bool isArrow;
         public bool isSpike;
+        public bool isBuildField;
         public Vector2Int arrowDirection;
         public float cost = 1f;
         public ButtonBase button;
         public bool hasButton { get; set; }
+        // TELEPORTY
+        public bool hasTeleport = false;
+        public TeleportBase teleport = null;
     }
 
     public Vector2Int size;

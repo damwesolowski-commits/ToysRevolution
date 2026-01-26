@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43579be4d93a8ad41bd5d24db4ff52f8, type: 3}
+  m_Name: Tube
+  m_EditorClassIdentifier: Assembly-CSharp::WeaponConfig
+  id: Weapon_Tube
+  displayName: Detka
+  icon: {fileID: 21300000, guid: a6d9401c980b9fe4bb4ef6533cf32aaf, type: 3}
+  holderSpriteOverride: {fileID: 21300000, guid: a7c156de4b306774389f5d7a7839f2f1, type: 3}
+  damage: 12
+  range: 1.6
+  cooldownSeconds: 1.5
+  weaponType: 0
+  abilities:
+  - {fileID: 11400000, guid: ea558d0fd84f31645a68a1865d2a4d2b, type: 2}

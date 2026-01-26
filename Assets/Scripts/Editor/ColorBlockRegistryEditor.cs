@@ -18,9 +18,27 @@ public class ColorBlockRegistryEditor : Editor
         var registry = target as ColorBlockRegistryBase;
 
         var blocks = new List<ColorBlock>();
-        blocks.AddRange(FindObjectsOfType<ColorBlock>());
 
-        var allButtons = FindObjectsOfType<ButtonBase>();
+        if (registry is GreenBlockRegistry)
+            blocks.AddRange(FindObjectsByType<GreenBlock>(FindObjectsSortMode.None).Cast<ColorBlock>());
+        else if (registry is RedBlockRegistry)
+            blocks.AddRange(FindObjectsByType<RedBlock>(FindObjectsSortMode.None).Cast<ColorBlock>());
+        else if (registry is BlueBlockRegistry)
+            blocks.AddRange(FindObjectsByType<BlueBlock>(FindObjectsSortMode.None).Cast<ColorBlock>());
+        else if (registry is BrownBlockRegistry)
+            blocks.AddRange(FindObjectsByType<BrownBlock>(FindObjectsSortMode.None).Cast<ColorBlock>());
+        else if (registry is GrayBlockRegistry)
+            // ⬇️ tu nie odwołujemy się do nieistniejącej klasy GrayBlock – filtr po nazwie
+            blocks.AddRange(FindObjectsByType<ColorBlock>(FindObjectsSortMode.None)
+                            .Where(b => b != null && b.GetType().Name.Contains("Gray")));
+        else if (registry is PinkPurpleBlockRegistry)
+            blocks.AddRange(FindObjectsByType<PinkPurpleBlockBase>(FindObjectsSortMode.None).Cast<ColorBlock>());
+        else if (registry is TimeBlockRegistry)
+            blocks.AddRange(FindObjectsByType<TimedColorBlock>(FindObjectsSortMode.None).Cast<ColorBlock>());
+        else
+            blocks.AddRange(FindObjectsByType<ColorBlock>(FindObjectsSortMode.None));
+
+        var allButtons = FindObjectsByType<ButtonBase>(FindObjectsSortMode.None);
         var buttons = new List<ButtonBase>();
 
         // ➜ Zbierz odpowiednie przyciski wg typu rejestru (po nazwie klasy)
@@ -28,6 +46,16 @@ public class ColorBlockRegistryEditor : Editor
             buttons.AddRange(allButtons.Where(b => b != null && b.GetType().Name.Contains("Green")));
         else if (registry is RedBlockRegistry)
             buttons.AddRange(allButtons.Where(b => b != null && b.GetType().Name.Contains("Red")));
+        else if (registry is BlueBlockRegistry)
+            buttons.AddRange(allButtons.Where(b => b != null && b.GetType().Name.Contains("Blue")));
+        else if (registry is BrownBlockRegistry)
+            buttons.AddRange(allButtons.Where(b => b != null && b.GetType().Name.Contains("Brown")));
+        else if (registry is GrayBlockRegistry)
+            buttons.AddRange(allButtons.Where(b => b != null && b.GetType().Name.Contains("Gray")));
+        else if (registry is PinkPurpleBlockRegistry)
+            buttons.AddRange(allButtons.Where(b => b != null && b.GetType().Name.Contains("PinkPurple")));
+        else if (registry is TimeBlockRegistry)
+            buttons.AddRange(allButtons.Where(b => b != null && b.GetType().Name.Contains("Time")));
         else
             buttons.AddRange(allButtons);
 

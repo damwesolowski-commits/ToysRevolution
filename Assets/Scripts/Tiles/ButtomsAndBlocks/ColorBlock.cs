@@ -10,18 +10,18 @@ public class ColorBlock : MonoBehaviour
     public int groupId; // ⬅️ ID grupy, do której klocek należy
     public enum BlockType
     {
-        Normal,    // zwykły, nie zabija
         Deadly,    // zabija gracza przy kontakcie
         Bridge,    // most, itp.
     }
 
-    [Header("Block Settings")]
-    public BlockType blockType = BlockType.Normal;
+    public BlockType blockType = BlockType.Deadly;
 
     [Header("Ustawienia siatki")]
     public bool isExtendedAtStart = true; // startowy stan
     private bool isExtended;
     public bool IsExtended => isExtended;
+
+    public bool IsDeadlyNow => blockType == BlockType.Deadly && isExtended;
 
     [Header("Sprites")]
     public Sprite extendedSprite; // wysunięty
@@ -132,16 +132,6 @@ public class ColorBlock : MonoBehaviour
                 if (TileLogicManager.Instance != null)
                     TileLogicManager.Instance.SetTileNeutralized(transform.position, false);
                 break;
-
-            default: // BlockType.Normal
-                cellData.walkable = !isExtended;
-                cellData.isObstacleHard = isExtended;
-                cellData.isDeadly = false;
-                cellData.isBridge = false;
-
-                if (TileLogicManager.Instance != null)
-                    TileLogicManager.Instance.SetTileNeutralized(transform.position, false);
-                break;
         }
 
         TileLogicManager.Instance.gridData.SetCell(gridPos, cellData);
@@ -156,12 +146,9 @@ public class ColorBlock : MonoBehaviour
         switch (blockType)
         {
             case BlockType.Bridge:
-                walkableForAstar = isExtended;    // most przechodni tylko gdy wysunięty
+                walkableForAstar = isExtended;
                 break;
             case BlockType.Deadly:
-                walkableForAstar = !isExtended;
-                break;
-            default:
                 walkableForAstar = !isExtended;
                 break;
         }

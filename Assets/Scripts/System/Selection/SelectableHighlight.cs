@@ -47,7 +47,7 @@ public class SelectableHighlight : MonoBehaviour
 
             // 🔹 Pokaż pasek HP
             if (healthBar != null)
-                healthBar.Show();
+                healthBar.OnSelected();
         }
         else
         {
@@ -60,7 +60,7 @@ public class SelectableHighlight : MonoBehaviour
 
             // 🔹 Ukryj pasek HP
             if (healthBar != null)
-                healthBar.Hide();
+                healthBar.OnDeselected();
         }
     }
 

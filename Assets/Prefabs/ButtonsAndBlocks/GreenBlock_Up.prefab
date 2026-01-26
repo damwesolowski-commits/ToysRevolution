@@ -216,7 +216,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GreenBlock
   groupId: 0
-  blockType: 1
+  blockType: 0
   isExtendedAtStart: 1
   extendedSprite: {fileID: 21300000, guid: 200029c938fabf54887108f778ab634f, type: 3}
   hiddenSprite: {fileID: 21300000, guid: b6bb37cdc6dc5c545b29435cd414b146, type: 3}

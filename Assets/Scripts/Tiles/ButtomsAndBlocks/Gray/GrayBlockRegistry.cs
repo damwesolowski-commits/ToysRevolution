@@ -6,13 +6,11 @@ public class GrayBlockRegistry : ColorBlockRegistryBase
 {
     public override List<ColorBlock> GetBlocksByGroup(int id)
     {
-        // zwróć WSZYSTKIE ColorBlocki z tym groupId – na start bez dalszego filtrowania
-        return allBlocks.Where(b => b != null && b.groupId == id).ToList();
-    }
+        // Pobierz TYLKO bloki, których klasa w nazwie zawiera "Gray"
+        allBlocks = FindObjectsByType<ColorBlock>(FindObjectsSortMode.None)
+                    .Where(b => b != null && b.GetType().Name.Contains("Gray"))
+                    .ToList();
 
-    private void Awake()
-    {
-        // zbierz wszystkie ColorBlocki istniejące w scenie
-        allBlocks = FindObjectsOfType<ColorBlock>(true).ToList();
+        return allBlocks.Where(b => b.groupId == id).ToList();
     }
 }

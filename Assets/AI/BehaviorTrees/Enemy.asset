@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b23f08d2ae4cba14087c1ed36193d82b, type: 3}
+  m_Name: Enemy
+  m_EditorClassIdentifier: Assembly-CSharp::BehaviorDesigner.Runtime.ExternalBehaviorTree
+  mBehaviorSource:
+    behaviorName: Behavior
+    behaviorDescription: 
+    mTaskData:
+      types: []
+      parentIndex: 
+      startIndex: 
+      variableStartIndex: 
+      JSONSerialization: '{"EntryTask":{"Type":"BehaviorDesigner.Runtime.Tasks.EntryTask","NodeData":{"Offset":"(310,96)"},"ID":0,"Name":"Entry","Instant":true},"RootTask":{"Type":"BehaviorDesigner.Runtime.Tasks.Selector","NodeData":{"Offset":"(-3.41601563,133)"},"ID":1,"Name":"CombatSelector","Instant":true,"AbortTypeabortType":"None","Children":[{"Type":"BehaviorDesigner.Runtime.Tasks.Sequence","NodeData":{"Offset":"(-127.21582,150)"},"ID":2,"Name":"Attack
+        Player","Instant":true,"AbortTypeabortType":"None","Children":[{"Type":"FindPlayerByTag","NodeData":{"Offset":"(-148.21582,137)"},"ID":3,"Name":"Find
+        Player By Tag","Instant":true,"SharedGameObjectplayer":{"Type":"BehaviorDesigner.Runtime.SharedGameObject","Name":"player","IsShared":true},"StringtagName":"Player"},{"Type":"MeleeAttack","NodeData":{"Offset":"(130.153961,139.860474)"},"ID":4,"Name":"Melee
+        Attack","Instant":true,"SharedGameObjecttarget":{"Type":"BehaviorDesigner.Runtime.SharedGameObject","Name":"player","IsShared":true},"Int32damage":10,"Singlecooldown":3,"SingleattackRange":1.6,"SinglehitReactionDelay":1}]},{"Type":"BehaviorDesigner.Runtime.Tasks.Sequence","NodeData":{"Offset":"(200,150)"},"ID":5,"Name":"Chase
+        Player","Instant":false,"AbortTypeabortType":"None","Children":[{"Type":"FindPlayerByTag","NodeData":{"Offset":"(-3.5,173)"},"ID":6,"Name":"Find
+        Player By Tag","Instant":true,"SharedGameObjectplayer":{"Type":"BehaviorDesigner.Runtime.SharedGameObject","Name":"player","IsShared":true},"StringtagName":"Player"},{"Type":"IsTargetInRange2D","NodeData":{"Offset":"(191.5,175)","WatchedFields":["detectionRange"]},"ID":7,"Name":"Is
+        Target In Range 2 D","Instant":true,"SharedGameObjecttarget":{"Type":"BehaviorDesigner.Runtime.SharedGameObject","Name":"player","IsShared":true},"SharedFloatdetectionRange":{"Type":"BehaviorDesigner.Runtime.SharedFloat","Name":null,"SinglemValue":5}},{"Type":"MoveToTargetOnGrid","NodeData":{"Offset":"(390,180)"},"ID":8,"Name":"Move
+        To Target On Grid","Instant":true,"SharedGameObjecttarget":{"Type":"BehaviorDesigner.Runtime.SharedGameObject","Name":"player","IsShared":true},"SinglearriveDistance":1.5,"SinglerepathDistance":0.5}]}]},"Variables":[{"Type":"BehaviorDesigner.Runtime.SharedGameObject","Name":"player","IsShared":true},{"Type":"BehaviorDesigner.Runtime.SharedFloat","Name":"detectionRange","IsShared":true,"SinglemValue":5}]}'
+      fieldSerializationData:
+        typeName: []
+        fieldNameHash: 
+        startIndex: 
+        dataPosition: 
+        unityObjects: []
+        byteData: 
+        byteDataArray: 
+      Version: 1.7.12

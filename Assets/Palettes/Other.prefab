@@ -35,6 +35,7 @@ Transform:
   - {fileID: 8667389532084275576}
   - {fileID: 7705678001525316293}
   - {fileID: 9198544905948908213}
+  - {fileID: 1610540625687005946}
   m_Father: {fileID: 385179567510908399}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1839735485 &5723827409428006189
@@ -209,6 +210,68 @@ Grid:
   m_CellGap: {x: 0, y: 0, z: 0}
   m_CellLayout: 0
   m_CellSwizzle: 0
+--- !u!1001 &2203574714400813629
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 5333704708238291059}
+    m_Modifications:
+    - target: {fileID: 634270520695355591, guid: deb6f476c31cec84ba614d703bf1a4ec, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -2.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 634270520695355591, guid: deb6f476c31cec84ba614d703bf1a4ec, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 634270520695355591, guid: deb6f476c31cec84ba614d703bf1a4ec, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 634270520695355591, guid: deb6f476c31cec84ba614d703bf1a4ec, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 634270520695355591, guid: deb6f476c31cec84ba614d703bf1a4ec, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 634270520695355591, guid: deb6f476c31cec84ba614d703bf1a4ec, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 634270520695355591, guid: deb6f476c31cec84ba614d703bf1a4ec, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 634270520695355591, guid: deb6f476c31cec84ba614d703bf1a4ec, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 634270520695355591, guid: deb6f476c31cec84ba614d703bf1a4ec, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 634270520695355591, guid: deb6f476c31cec84ba614d703bf1a4ec, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4971402372475894004, guid: deb6f476c31cec84ba614d703bf1a4ec, type: 3}
+      propertyPath: m_Name
+      value: Chest
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: deb6f476c31cec84ba614d703bf1a4ec, type: 3}
+--- !u!4 &1610540625687005946 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 634270520695355591, guid: deb6f476c31cec84ba614d703bf1a4ec, type: 3}
+  m_PrefabInstance: {fileID: 2203574714400813629}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &3388954423482193198
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -495,6 +558,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4339114412027622493, guid: 2db69b15774e23f40a9f9a83cf63fade, type: 3}
+      propertyPath: m_DynamicOccludee
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4339114412027622493, guid: 2db69b15774e23f40a9f9a83cf63fade, type: 3}
+      propertyPath: m_LightProbeUsage
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8631700762795451916, guid: 2db69b15774e23f40a9f9a83cf63fade, type: 3}
       propertyPath: m_Name
       value: Geyser_sprites_inactive_0
@@ -509,7 +580,7 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1820313751953792517, guid: 2db69b15774e23f40a9f9a83cf63fade, type: 3}
   m_PrefabInstance: {fileID: 7414269060787377328}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &6816273705172439883
+--- !u!114 &4420245302781001979
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

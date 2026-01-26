@@ -92,15 +92,33 @@ public class BridgeCyclic : MonoBehaviour
     {
         if (spriteRenderer == null) return;
 
-        // Zmieniamy przezroczystość (1.0 = widoczny, 0.2 = zanurzony)
+        // Zmieniamy przezroczystość mostu
         Color c = spriteRenderer.color;
         c.a = isVisible ? 1f : 0.2f;
         spriteRenderer.color = c;
 
-        // Informujemy TileLogicManager o neutralizacji Deadly Tile
+        // Aktualizujemy neutralizację deadly tiles
         if (TileLogicManager.Instance != null)
         {
             TileLogicManager.Instance.SetTileNeutralized(bridgeWorldPos, isVisible);
+
+            // Gdy most znika → od razu wymuś sprawdzenie kto stoi na polu
+            if (!isVisible)
+            {
+                Vector3Int cell = Vector3Int.FloorToInt(bridgeWorldPos);
+                TileLogicManager.Instance.RefreshTileLogic(cell);
+            }
+            // 🟫 Sprawdź skrzynie na tym samym polu co most (bez użycia fizyki)
+            Vector3Int bridgeCell = TileLogicManager.Instance.groundTilemap.WorldToCell(bridgeWorldPos);
+
+            foreach (var chest in GameObject.FindGameObjectsWithTag("Chest"))
+            {
+                Vector3Int chestCell = TileLogicManager.Instance.groundTilemap.WorldToCell(chest.transform.position);
+                if (chestCell == bridgeCell)
+                {
+                    TileLogicManager.Instance.HandleUnitOnTile(chest);
+                }
+            }
         }
     }
 

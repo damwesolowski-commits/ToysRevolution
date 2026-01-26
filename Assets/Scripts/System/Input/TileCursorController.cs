@@ -5,45 +5,48 @@ using System.Collections;
 
 public class TileCursorController : MonoBehaviour
 {
+    [Header("Po kliknięciu na tę warstwę Ping Effect będzie miał czerwony kolor")]
+    [SerializeField] private LayerMask enemyLayers;
+
     [Header("References")]
     [SerializeField] private Camera mainCamera;
     [SerializeField] private Tilemap groundTilemap;
     [SerializeField] private InputActionReference rightClickAction; // <Mouse>/rightButton
-    [SerializeField] private GameObject pingRingPrefab; // Prefab efektu ping
-    [SerializeField] private GameObject cursorPrefab; // ✅ Prefab kursora (np. TileCursorRing)
+    [SerializeField] private GameObject pingRingPrefab;             // Prefab efektu ping
+    [SerializeField] private GameObject cursorPrefab;               // Prefab kursora (np. TileCursorRing)
 
     [Header("Settings")]
     [SerializeField] private float zOffset = -0.01f;
-    [SerializeField] private bool useRawMouseFallback = true; // nasłuchuje PPM bez Input Actions
+    [SerializeField] private bool useRawMouseFallback = true;       // nasłuchuje PPM bez Input Actions
 
     private InputAction _clickAction;
     private GameObject _cursorInstance;
-    private Vector3 _pingBaseScale = Vector3.one; // skala dopasowana do kafla
+    private Vector3 _pingBaseScale = Vector3.one;                   // skala dopasowana do kafla
 
     private void OnEnable()
     {
-        if (rightClickAction != null)
-        {
-            _clickAction = rightClickAction.action;
-            _clickAction.started += OnPointerDown;
-            _clickAction.canceled += OnPointerUp;
-            _clickAction.Enable();
-        }
+        if (rightClickAction == null) return;
+
+        _clickAction = rightClickAction.action;
+        if (_clickAction == null) return;
+
+        _clickAction.started += OnPointerDown;
+        _clickAction.canceled += OnPointerUp;
+        _clickAction.Enable();
     }
 
     private void OnDisable()
     {
-        if (_clickAction != null)
-        {
-            _clickAction.started -= OnPointerDown;
-            _clickAction.canceled -= OnPointerUp;
-            _clickAction.Disable();
-        }
+        if (_clickAction == null) return;
+
+        _clickAction.started -= OnPointerDown;
+        _clickAction.canceled -= OnPointerUp;
+        _clickAction.Disable();
     }
 
     private void Start()
     {
-        // ✅ Tworzymy instancję kursora prefab
+        // Tworzymy instancję kursora prefab
         if (cursorPrefab != null && groundTilemap != null)
         {
             _cursorInstance = Instantiate(cursorPrefab, transform.position, Quaternion.identity);
@@ -91,7 +94,9 @@ public class TileCursorController : MonoBehaviour
         // Ukrywanie kursora podczas przeciągania zaznaczenia
         if (SelectionManager.Instance != null && SelectionManager.Instance.IsDragging())
         {
-            if (_cursorInstance != null) _cursorInstance.SetActive(false);
+            if (_cursorInstance != null)
+                _cursorInstance.SetActive(false);
+
             return;
         }
         else if (_cursorInstance != null && !_cursorInstance.activeSelf)
@@ -102,9 +107,15 @@ public class TileCursorController : MonoBehaviour
         // ruch kursora po siatce
         if (mainCamera != null && groundTilemap != null)
         {
-            Vector2 mouseScreen = Mouse.current != null ? Mouse.current.position.ReadValue() : Vector2.zero;
+            Vector2 mouseScreen = Mouse.current != null
+                ? Mouse.current.position.ReadValue()
+                : Vector2.zero;
+
             Ray ray = mainCamera.ScreenPointToRay(mouseScreen);
-            Plane plane = new Plane(Vector3.forward, new Vector3(0, 0, groundTilemap.transform.position.z));
+            Plane plane = new Plane(
+                Vector3.forward,
+                new Vector3(0, 0, groundTilemap.transform.position.z)
+            );
 
             if (plane.Raycast(ray, out float distance))
             {
@@ -113,17 +124,21 @@ public class TileCursorController : MonoBehaviour
                 Vector3 cellCenter = groundTilemap.GetCellCenterWorld(cellPos);
 
                 transform.position = new Vector3(
-                    cellCenter.x, cellCenter.y,
+                    cellCenter.x,
+                    cellCenter.y,
                     groundTilemap.transform.position.z + zOffset
                 );
             }
         }
 
-        // fallback na czysty PPM
+        // fallback na czysty PPM (bez Input Actions)
         if (useRawMouseFallback && Mouse.current != null)
         {
-            if (Mouse.current.rightButton.wasPressedThisFrame) OnPointerDown(default);
-            if (Mouse.current.rightButton.wasReleasedThisFrame) OnPointerUp(default);
+            if (Mouse.current.rightButton.wasPressedThisFrame)
+                OnPointerDown(default);
+
+            if (Mouse.current.rightButton.wasReleasedThisFrame)
+                OnPointerUp(default);
         }
     }
 
@@ -138,10 +153,21 @@ public class TileCursorController : MonoBehaviour
         if (_cursorInstance != null)
             _cursorInstance.SetActive(true);
 
-        if (SelectionManager.Instance != null && SelectionManager.Instance.HasSelectedUnits())
+        if (SelectionManager.Instance != null &&
+            SelectionManager.Instance.HasSelectedUnits())
         {
             SpawnPingEffect();
         }
+    }
+
+    private bool IsEnemyOnCursorTile()
+    {
+        // Cursor jest ustawiony w centrum kafelka, więc bierzemy jego pozycję
+        Vector2 pos2D = new Vector2(transform.position.x, transform.position.y);
+
+        // Sprawdzamy, czy na tym punkcie jest collider z warstwy enemyLayers
+        Collider2D hit = Physics2D.OverlapPoint(pos2D, enemyLayers);
+        return hit != null;
     }
 
     private void SpawnPingEffect()
@@ -150,6 +176,17 @@ public class TileCursorController : MonoBehaviour
 
         GameObject ping = Instantiate(pingRingPrefab, transform.position, Quaternion.identity);
         ping.transform.localScale = _pingBaseScale;
+
+        var sr = ping.GetComponent<SpriteRenderer>();
+        if (sr != null)
+        {
+            // 🔴 Jeśli na tym kafelku stoi Enemy → czerwony
+            // 🟩 w przeciwnym wypadku → zielony (ruch)
+            if (IsEnemyOnCursorTile())
+                sr.color = Color.red;
+            else
+                sr.color = Color.green;
+        }
 
         StartCoroutine(PingPulse(ping));
     }
@@ -170,7 +207,11 @@ public class TileCursorController : MonoBehaviour
             elapsed += Time.deltaTime;
             float t = Mathf.Clamp01(elapsed / duration);
 
-            float factor = Mathf.Lerp(startFactor, endFactor, Mathf.SmoothStep(0f, 1f, t));
+            float factor = Mathf.Lerp(
+                startFactor,
+                endFactor,
+                Mathf.SmoothStep(0f, 1f, t)
+            );
             ping.transform.localScale = _pingBaseScale * factor;
 
             if (pingSR != null)

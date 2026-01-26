@@ -34,6 +34,6 @@ public class ButtonRegister : MonoBehaviour
         cellData.button = GetComponent<ButtonBase>();
         manager.gridData.SetCell(gridPos, cellData);
 
-        Debug.Log($"✅ Zarejestrowano przycisk {name} w komórce {gridPos}");
+        //Debug.Log($"✅ Zarejestrowano przycisk {name} w komórce {gridPos}");
     }
 }

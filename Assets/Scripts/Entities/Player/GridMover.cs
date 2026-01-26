@@ -2,9 +2,20 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using static GridData;
 
 public class GridMover : MonoBehaviour
 {
+    public enum GridMoverType
+    {
+        Player,
+        Enemy,
+        Chest
+    }
+    [Header("Typ obiektu")]
+    public GridMoverType moverType = GridMoverType.Player;
+
     [Header("Ruch")]
     public float tilesPerSecond = 1.666f;
     [Tooltip("Pola śliskie")]
@@ -29,9 +40,23 @@ public class GridMover : MonoBehaviour
 
     private Vector2Int currentTile;
     private Vector2Int? nextTile;
+    private bool atTileCenter = true;   // czy stoimy dokładnie na środku kafelka
     private Vector2Int lastDirection = Vector2Int.zero;
     // 🔒 Blokada przyjmowania nowych rozkazów podczas ślizgania
     private bool isSliding = false;
+    // 🔒 Blokada ślizgania się po pchnięciu skrzyni
+    private bool justPushedBox = false;
+    // 🔄 Zaplanowany ślizg z pola strzałki (wykonywany w następnym FixedUpdate)
+    private bool pendingArrowSlide = false;
+    private Vector2Int pendingArrowSlideDir = Vector2Int.zero;
+    private Vector3? pendingCommand = null;
+
+    public void ScheduleArrowSlide(Vector2Int dir)
+    {
+        pendingArrowSlide = true;
+        pendingArrowSlideDir = dir;
+    }
+
     public void SetSliding(bool value) => isSliding = value;
 
     private float arrowMoveCooldown = 0f;
@@ -49,9 +74,16 @@ public class GridMover : MonoBehaviour
         seeker = GetComponent<Seeker>();
         highlight = GetComponent<SelectableHighlight>();
 
-        Vector2 rounded = SnapCenter(transform.position);
-        transform.position = rounded;
+        Vector3 pos = transform.position;
+
+        // wymuś ustawienie skrzyni dokładnie na środek kafelka
+        Vector2 rounded = SnapCenter(pos);
+        transform.position = new Vector3(rounded.x, rounded.y, pos.z);
+
+        // teraz pobierz aktualny tile
         currentTile = WorldToTile(rounded);
+
+        // i ZAJMIJ go w OccupiedBy
         Occupy(currentTile, this);
     }
 
@@ -69,17 +101,9 @@ public class GridMover : MonoBehaviour
 
     void Update()
     {
-        if (highlight != null && !highlight.IsSelected) return;
-        // 🧊 Jeśli gracz się ślizga – nie przyjmuj nowych rozkazów
-        if (isSliding) return;
-        // 🏹 Jeśli gracz porusza się po strzałkach – zablokuj nowe rozkazy
-        if (isOnArrowChain) return;
-        if (Input.GetMouseButtonDown(1))
-        {
-            Vector3 world = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            world.z = 0;
-            RequestPathTo(world);
-        }
+        // Wszystkie rozkazy ruchu (klik PPM, pogoń za wrogiem itd.)
+        // obsługujemy przez ClickToMove2D + RequestPathTo.
+        // Tutaj nic nie robimy.
     }
 
     void FixedUpdate()
@@ -87,12 +111,76 @@ public class GridMover : MonoBehaviour
         if (arrowMoveCooldown > 0f)
             arrowMoveCooldown -= Time.fixedDeltaTime;
 
-        if (!moving) return;
+        // 👉 Strzałka stojąca na lodzie mogła zaplanować ślizg
+        if (pendingArrowSlide)
+        {
+            pendingArrowSlide = false;
+            lastDirection = pendingArrowSlideDir;
+            // Ślizg wystartuje od BIEŻĄCEGO kafla, w kierunku strzałki
+            SlideForward();
+        }
+
+        if (!moving)
+        {
+            // Stoimy → jesteśmy na środku kafelka
+            // ...ale tylko jeśli nie ma zaplanowanego kroku.
+            if (nextTile == null)
+                atTileCenter = true;
+
+            // Jeśli stoimy i jest zapamiętany rozkaz – wystartuj nową ścieżkę,
+            // ALE tylko wtedy, gdy nie jesteśmy w ślizgu ani na łańcuchu strzałek.
+            if (pendingCommand.HasValue)
+            {
+                // 🔒 Strzałki / śliskie pola mają wyższy priorytet niż pendingCommand.
+                // Jeśli jednostka jest w ślizgu lub na łańcuchu strzałek,
+                // to zostawiamy pendingCommand na później.
+                if (isSliding || isOnArrowChain)
+                {
+                    if (logDebug)
+                        Debug.Log($"{name}: pendingCommand wstrzymany – ślizg / łańcuch strzałek ma priorytet.");
+                }
+                else
+                {
+                    Vector3 cmd = pendingCommand.Value;
+                    pendingCommand = null;
+                    RequestPathTo(cmd);
+                }
+            }
+            return;
+        }
 
         // 1) Rezerwacja następnego kafla
         if (nextTile == null && pathIndex < pathTiles.Count)
         {
             Vector2Int candidate = pathTiles[pathIndex];
+
+            // --- BOX PUSH LOGIC ---
+            if (OccupiedBy.TryGetValue(candidate, out var occ) && occ != null)
+            {
+                var mover = occ.GetComponent<GridMover>();
+                if (mover != null && mover.moverType == GridMoverType.Chest)
+                {
+                    // kierunek ruchu playera
+                    Vector2Int direction = candidate - currentTile;
+
+                    // spróbuj popchnąć skrzynię
+                    if (!TileLogicManager.Instance.PushBox(occ.gameObject, direction))
+                    {
+                        // nie da się popchnąć → zatrzymaj playera
+                        moving = false;
+                        ClearAllReservationsOwnedBy(this);
+                        return;
+                    }
+                    else
+                    {
+                        justPushedBox = true;
+                        // ✅ skrzynia zaczęła się ruszać – zwolnij JEJ STARY kafel,
+                        // żeby player mógł wejść na miejsce po skrzyni
+                        ReleaseIfOccupiedBy(candidate, mover);
+                    }
+                }
+            }
+            // --- END BOX PUSH ---
 
             if (CanReserve(candidate, this))
             {
@@ -116,8 +204,7 @@ public class GridMover : MonoBehaviour
                 }
 
 
-                // Pobieramy dane o kafelku z logiki siatkowej
-                // 🧭 Pobieramy dane o kafelku
+                /// 🧭 Pobieramy dane o kafelku
                 var candidateData = TileLogicManager.Instance.GetCellDataAt(TileToWorld(candidate));
 
                 // 🔹 Jeśli nic nie zwrócono – traktujemy jako pole przechodnie
@@ -127,28 +214,45 @@ public class GridMover : MonoBehaviour
                 }
                 else
                 {
-                    // Hard obstacles = nieprzechodnie
-                    if (candidateData.isObstacleHard)
+                    if (moverType == GridMoverType.Chest)
                     {
-                        ClearAllReservationsOwnedBy(this);
-                        TryRepath("HARD");
-                        return;
+                        // ⚙️ Dla skrzyni używamy specjalnych zasad:
+                        // może wejść na wodę / deadly bez kolców, ale nie na ściany itp.
+                        if (!TileLogicManager.Instance.CanChestEnter(candidateData))
+                        {
+                            ClearAllReservationsOwnedBy(this);
+                            TryRepath("CHEST_CANT_ENTER");
+                            return;
+                        }
                     }
-
-                    // Soft obstacles = omijaj
-                    if (candidateData.isObstacleSoft)
+                    else
                     {
-                        ClearAllReservationsOwnedBy(this);
-                        TryRepath("SOFT");
-                        return;
-                    }
+                        // Hard obstacles = nieprzechodnie
+                        if (candidateData.isObstacleHard)
+                        {
+                            ClearAllReservationsOwnedBy(this);
+                            TryRepath("HARD");
+                            return;
+                        }
 
-                    // 💡 Strzałki są zawsze przechodnie
-                    if (!candidateData.walkable && !candidateData.isArrow)
-                    {
-                        ClearAllReservationsOwnedBy(this);
-                        TryRepath("NOT WALKABLE");
-                        return;
+                        // Soft obstacles = omijaj
+                        if (candidateData.isObstacleSoft)
+                        {
+                            ClearAllReservationsOwnedBy(this);
+                            TryRepath("SOFT");
+                            return;
+                        }
+
+                        if (!candidateData.walkable && !candidateData.isArrow)
+                        {
+                            // ✅ wyjątek: woda + koło do pływania
+                            if (!CanEnterNonWalkableTile(candidateData, candidate))
+                            {
+                                ClearAllReservationsOwnedBy(this);
+                                TryRepath("NOT WALKABLE");
+                                return;
+                            }
+                        }
                     }
                 }
 
@@ -201,6 +305,9 @@ public class GridMover : MonoBehaviour
         // 2) Ruch do nextTile
         if (nextTile != null)
         {
+            // Opuszczamy środek kafla → jesteśmy "pomiędzy"
+            atTileCenter = false;
+
             Vector2 nextCenter = TileToWorld(nextTile.Value);
 
             // 🧊 Jeśli jesteśmy na polu śliskim – użyj innej prędkości
@@ -244,6 +351,12 @@ public class GridMover : MonoBehaviour
                     previousCell.button.HandleUnitStepOff(gameObject);
                 }
 
+                // 🔸 Jeśli na poprzednim kafelku był teleport — powiadom go o zejściu
+                if (previousCell != null && previousCell.hasTeleport)
+                {
+                    previousCell.teleport.HandleUnitStepOff(gameObject);
+                }
+
                 if (TryOccupy(nextTile.Value, this))
                 {
                     // 🟦 ZAPAMIĘTAJ KIERUNEK zanim podmienisz currentTile
@@ -253,11 +366,22 @@ public class GridMover : MonoBehaviour
                     currentTile = nextTile.Value;
                     lastDirection = enteredDir;
 
+                    // --- JESTEŚMY DOKŁADNIE NA ŚRODKU NOWEGO KAFELKA ---
+                    atTileCenter = true;
+
                     // 🔹 Sprawdź logikę pola (np. kolce, śliskie, strzałki)
                     if (TileLogicManager.Instance != null)
                     {
-                        TileLogicManager.Instance.HandlePlayerOnTile(gameObject);
+                        if (moverType == GridMover.GridMoverType.Player)
+                        {
+                            TileLogicManager.Instance.HandlePlayerOnTile(gameObject);
+                        }
+                        else
+                        {
+                            TileLogicManager.Instance.HandleUnitOnTile(gameObject);
+                        }
                     }
+
                     // 🕐 Ustaw cooldown tylko jeśli aktualne pole to strzałka
                     var arrivedCell = TileLogicManager.Instance.GetCellDataAt(TileToWorld(currentTile));
                     if (arrivedCell != null && arrivedCell.isArrow)
@@ -265,108 +389,76 @@ public class GridMover : MonoBehaviour
                     else
                         arrowMoveCooldown = 0f;
 
+                    // --- zakończyliśmy krok A→B ---
                     nextTile = null;
                     pathIndex++;
                     blockTimer = 0f;
                     repathAttempts = 0;
 
-                    if (pathIndex >= pathTiles.Count)
+                    // 🔚 Czy skończyliśmy starą ścieżkę?
+                    bool reachedEndOfCurrentPath = pathIndex >= pathTiles.Count;
+
+                    // --- Po dojściu do środka kafelka sprawdź, czy był zapamiętany rozkaz ---
+                    if (pendingCommand.HasValue)
+                    {
+                        // 🔎 Sprawdź, czy obecny kafelek wymusza ruch (strzałka / lód)
+                        bool forcedTile = false;
+                        var cellNow = TileLogicManager.Instance != null
+                            ? TileLogicManager.Instance.GetCellDataAt(TileToWorld(currentTile))
+                            : null;
+
+                        if (cellNow != null && (cellNow.isArrow || cellNow.isSlippery))
+                            forcedTile = true;
+
+                        // Jeżeli:
+                        //  - jesteśmy w ślizgu LUB
+                        //  - jesteśmy na łańcuchu strzałek LUB
+                        //  - stoimy na kafelku wymuszającym ruch,
+                        // to NIE wykonujemy jeszcze pendingCommand – zostawiamy go na później.
+                        if (isSliding || isOnArrowChain || forcedTile)
+                        {
+                            if (logDebug)
+                                Debug.Log($"{name}: pendingCommand wstrzymany – priorytet ma kafelek (strzałka / lód).");
+                        }
+                        else
+                        {
+                            Vector3 cmd = pendingCommand.Value;
+                            pendingCommand = null;
+
+                            // 🔄 Kończymy starą ścieżkę i czyścimy stan ruchu
+                            moving = false;
+                            pathTiles.Clear();
+                            pathIndex = 0;
+                            nextTile = null;
+
+                            if (logDebug)
+                                Debug.Log($"{name}: Arrived {currentTile} (pending command – requesting new path)");
+
+                            // ✅ NOWA ŚCIEŻKA startuje Z TEGO kafelka (na którym właśnie stoimy)
+                            InternalRequestPathTo(cmd);
+
+                            // ❗ Nie wchodzimy już w logikę końca starej ścieżki poniżej
+                            return;
+                        }
+                    }
+
+                    // Jeżeli NIE ma zapamiętanego rozkazu, obsługujemy normalne zakończenie ścieżki
+                    if (reachedEndOfCurrentPath)
                     {
                         moving = false;
+
                         if (logDebug) Debug.Log($"{name}: Arrived {currentTile}");
 
                         // 🔓 Odblokuj sterowanie dopiero po zejściu z lodu
                         var arrivedCell2 = TileLogicManager.Instance.GetCellDataAt(TileToWorld(currentTile));
+
+                        // 🔧 Jeśli skrzynia była na innym typie pola niż lód – resetujemy blokadę ślizgu
+                        if (arrivedCell2 != null && !arrivedCell2.isSlippery)
+                            justPushedBox = false;
+
                         bool stillOnIce = arrivedCell2 != null && arrivedCell2.isSlippery;
                         if (!stillOnIce)
                             isSliding = false;
-                    }
-
-                    // 🔄 Zaktualizuj stan zajętości po zakończeniu ruchu
-                    AstarPath.active.AddWorkItem(ctx =>
-                    {
-                        var gridGraph = AstarPath.active.data.gridGraph;
-                        if (gridGraph == null) return;
-
-                        // 1️⃣ Najpierw wyczyść kary
-                        foreach (var node in gridGraph.nodes)
-                        {
-                            node.Penalty = 0;
-                        }
-
-                        // 2️⃣ Przywróć kary dla Obstacles Soft (tak jak robi to GraphPenaltySetter)
-                        GraphPenaltySetter gps = FindObjectOfType<GraphPenaltySetter>();
-                        if (gps != null)
-                        {
-                            foreach (var node in gridGraph.nodes)
-                            {
-                                Vector3 worldPos = (Vector3)node.position;
-
-                                if (Physics2D.OverlapPoint(worldPos, gps.softMask1))
-                                    node.Penalty = (uint)gps.softPenalty1;
-                                else if (Physics2D.OverlapPoint(worldPos, gps.softMask2))
-                                    node.Penalty = (uint)gps.softPenalty2;
-                                else if (Physics2D.OverlapPoint(worldPos, gps.softMask3))
-                                    node.Penalty = (uint)gps.softPenalty3;
-                            }
-                        }
-
-                        // 3️⃣ Dodaj kary za jednostki (graczy)
-                        foreach (var node in gridGraph.nodes)
-                        {
-                            Vector2Int tilePos = WorldToTile((Vector2)(Vector3)node.position);
-                            if (OccupiedBy.ContainsKey(tilePos))
-                                node.Penalty = 8000; // duża kara – omijaj graczy
-                        }
-
-                        ctx.QueueFloodFill(); // aktualizuje dane grafu
-                    });
-
-                }
-                else
-                {
-                    // ❗Wejście zablokowane – sprawdź, czy ZJEŻDŻAMY ze STRZAŁKI
-                    var currentData = TileLogicManager.Instance.GetCellDataAt(TileToWorld(currentTile));
-                    if (currentData != null && currentData.isArrow)
-                    {
-                        // zabij jednostkę stojącą na kaflu docelowym i wejdź
-                        if (OccupiedBy.TryGetValue(nextTile.Value, out var other) && other != null && other != this)
-                        {
-                            var hp = other.GetComponent<Health>();
-                            if (hp != null) hp.TakeDamage(hp.MaxHP);
-                            ReleaseIfOccupiedBy(nextTile.Value, other); // zwolnij wpis
-                        }
-
-                        // zajmij kafel „po zabiciu”
-                        OccupiedBy[nextTile.Value] = this;
-
-                        Vector2Int enteredDir = nextTile.Value - currentTile;
-                        ClearReservationIfOwnedBy(nextTile.Value, this);
-                        currentTile = nextTile.Value;
-                        lastDirection = enteredDir;
-
-                        if (TileLogicManager.Instance != null)
-                            TileLogicManager.Instance.HandlePlayerOnTile(gameObject);
-
-                        nextTile = null;
-                        pathIndex++;
-                        blockTimer = 0f;
-                        repathAttempts = 0;
-
-                        if (pathIndex >= pathTiles.Count)
-                        {
-                            moving = false;
-                            isSliding = false;
-                            if (logDebug) Debug.Log($"{name}: Arrived (after arrow-kill) {currentTile}");
-                        }
-                    }
-                    else
-                    {
-                        // zwykłe kafle – bez agresji, zachowanie jak dotąd
-                        if (logDebug) Debug.Log($"{name}: Blocked by another unit → repath.");
-                        ClearAllReservationsOwnedBy(this);
-                        TryRepath("unit");
-                        return;
                     }
                 }
             }
@@ -384,9 +476,105 @@ public class GridMover : MonoBehaviour
         }
     }
 
+    // ===============================================
+    // 🔹 Ręczne czyszczenie zapamiętanych rozkazów
+    //    (używane przy nowym rozkazie gracza)
+    // ===============================================
+    public void ClearQueuedCommands()
+    {
+        // zapomnienie ostatniego pendingCommand
+        pendingCommand = null;
+
+        // opcjonalnie możesz też zresetować cel repathu:
+        lastGoalWorld = transform.position;
+
+        if (logDebug)
+            Debug.Log($"{name}: ClearQueuedCommands – wyczyszczono pendingCommand i lastGoalWorld.");
+    }
+
     // === ŚCIEŻKI ===
     public void RequestPathTo(Vector3 worldTarget)
     {
+        // 🚫 Jeśli jednostka się ślizga, ignorujemy zewnętrzne rozkazy ruchu
+        if (isSliding)
+        {
+            if (logDebug)
+                Debug.Log($"{name}: Ignoruję RequestPathTo – jednostka jest w ślizgu.");
+            return;
+        }
+
+        // 🚫 Jeśli jednostka jest na łańcuchu strzałek – też ignorujemy zewnętrzne rozkazy
+        if (isOnArrowChain)
+        {
+            if (logDebug)
+                Debug.Log($"{name}: Ignoruję RequestPathTo – jednostka jest na łańcuchu strzałek.");
+            return;
+        }
+
+        // 🔍 Środek aktualnego kafelka
+        Vector2 center = TileToWorld(currentTile);
+        float distFromCenter = Vector2.Distance(transform.position, center);
+        const float centerTolerance = 0.01f;
+
+        // 👉 JEŚLI JESTEŚMY W RUCHU i NIE stoimy dokładnie na środku kafla,
+        // to TYLKO buforujemy rozkaz i NIE liczymy teraz nowej ścieżki.
+        if (moving && distFromCenter > centerTolerance)
+        {
+            pendingCommand = worldTarget;
+
+            if (logDebug)
+            {
+                Debug.Log(
+                    $"{name}: RequestPathTo W RUCHU → pendingCommand (dist={distFromCenter:F3})");
+            }
+
+            return;
+        }
+
+        // 🩹 Jeśli NIE RUSZAMY SIĘ, ale pozycja jest minimalnie „brudna”
+        if (!moving && distFromCenter > centerTolerance)
+        {
+            // 👇 Specjalny przypadek: mamy zaplanowany nextTile, ale moving==false.
+            // To oznacza, że jesteśmy w POŁOWIE kroku A→B i ktoś nas zatrzymał.
+            // Zgodnie z zasadą: krok A→B musi być niepodzielny.
+            if (nextTile != null && !atTileCenter)
+            {
+                // traktujemy to jak "w trakcie ruchu" → tylko buforujemy rozkaz
+                pendingCommand = worldTarget;
+
+                if (logDebug)
+                {
+                    Debug.Log(
+                        $"{name}: RequestPathTo W PÓŁ KROKU (moving==false, nextTile={nextTile}) " +
+                        $"→ zapisuję pendingCommand, najpierw dokończę krok.");
+                }
+
+                // upewnij się, że dalej jedziemy do nextTile
+                moving = true;
+                return;
+            }
+
+            // zwykły przypadek: stoimy krzywo na środku kafla → dociągamy
+            transform.position = center;
+            if (logDebug)
+                Debug.Log($"{name}: Korekta pozycji → dociągam do środka kafelka przed RequestPathTo.");
+        }
+
+        // ✅ Stoimy na środku kafelka → można od razu liczyć ścieżkę
+        if (logDebug)
+        {
+            Debug.Log($"{name}: RequestPathTo NA ŚRODKU kafla → liczę nową ścieżkę");
+        }
+
+        pendingCommand = null;
+        InternalRequestPathTo(worldTarget);
+    }
+
+    // Wewnętrzna wersja – używana np. przez SlideForward, Arrow itp.
+    private void InternalRequestPathTo(Vector3 worldTarget)
+    {
+        atTileCenter = false;
+
         lastGoalWorld = worldTarget; // zapamiętaj nowy cel
 
         ClearAllReservationsOwnedBy(this);
@@ -399,8 +587,21 @@ public class GridMover : MonoBehaviour
         // Startuj ścieżkę tylko po jednym grafie (DiagonalGraph)
         seeker.StartPath(transform.position, worldTarget, OnPathComplete);
     }
+
     private void TryRepath(string reason)
     {
+        // Jeśli jednostka jest w ślizgu – NIE zmieniamy już kierunku.
+        // Zamiast tego przerywamy ślizg w miejscu.
+        if (isSliding)
+        {
+            if (logDebug)
+                Debug.Log($"{name}: Blokada w ślizgu ({reason}) → przerywam ślizg bez repathu.");
+            moving = false;
+            ClearAllReservationsOwnedBy(this);
+            isSliding = false;
+            return;
+        }
+
         moving = false;
         repathAttempts++;
 
@@ -427,14 +628,24 @@ public class GridMover : MonoBehaviour
             return;
         }
 
+        // 1) Konwersja ścieżki na kafelki
         var tiles = new List<Vector2Int>(p.vectorPath.Count);
-        foreach (var v in p.vectorPath) tiles.Add(WorldToTile(SnapCenter(v)));
+        foreach (var v in p.vectorPath)
+            tiles.Add(WorldToTile(SnapCenter(v)));
+
+        // 2) Reguły diagonalne
         tiles = EnforceDiagonalRules(tiles);
 
+        // 3) Usuń duplikaty następujące po sobie
         for (int i = tiles.Count - 2; i >= 0; i--)
-            if (tiles[i] == tiles[i + 1]) tiles.RemoveAt(i + 1);
+        {
+            if (tiles[i] == tiles[i + 1])
+                tiles.RemoveAt(i + 1);
+        }
 
-        if (tiles.Count > 0 && tiles[0] == currentTile) tiles.RemoveAt(0);
+        // 4) Usuń z początku ścieżki aktualny kafelek (stoimy już na nim)
+        while (tiles.Count > 0 && tiles[0] == currentTile)
+            tiles.RemoveAt(0);
 
         pathTiles = tiles;
         pathIndex = 0;
@@ -446,7 +657,6 @@ public class GridMover : MonoBehaviour
             // Blokuj przyjmowanie rozkazów do końca ślizgu
             isSliding = true;
         }
-
 
         if (logDebug) Debug.Log($"{name}: New path ({pathTiles.Count} tiles)");
         AstarPath.active.FlushGraphUpdates();
@@ -477,20 +687,50 @@ public class GridMover : MonoBehaviour
         s_tempTiles.Clear();
     }
 
-    private static void Occupy(Vector2Int tile, GridMover who) => OccupiedBy[tile] = who;
+    private static void Occupy(Vector2Int tile, GridMover who)
+    {
+        // 1) Zapisz, że kafelek jest zajęty
+        OccupiedBy[tile] = who;
 
+        // 2) Przelicz karę ruchu w grafie A* dla tego pola
+        if (GraphPenaltySetter.Instance != null)
+        {
+            Vector3 worldPos = TileToWorld(tile);
+            GraphPenaltySetter.Instance.RefreshPenaltyAtPosition(worldPos);
+        }
+    }
     private static void ReleaseIfOccupiedBy(Vector2Int tile, GridMover who)
     {
         if (OccupiedBy.TryGetValue(tile, out var owner) && owner == who)
+        {
+            // 1) Usuń z mapy zajętości
             OccupiedBy.Remove(tile);
+
+            // 2) Przelicz karę ruchu w grafie A* dla tego pola
+            if (GraphPenaltySetter.Instance != null)
+            {
+                Vector3 worldPos = TileToWorld(tile);
+                GraphPenaltySetter.Instance.RefreshPenaltyAtPosition(worldPos);
+            }
+        }
     }
 
     private bool TryOccupy(Vector2Int tile, GridMover owner)
     {
+        // Jeśli ktoś już stoi na tym polu i to NIE my → nie wchodzimy
         if (OccupiedBy.TryGetValue(tile, out var other) && other != owner)
             return false;
 
+        // Zajmujemy kafelek
         OccupiedBy[tile] = owner;
+
+        // 🔄 PRZELICZ KARĘ RUCHU dla tego pola w grafie A*
+        if (GraphPenaltySetter.Instance != null)
+        {
+            Vector3 worldPos = TileToWorld(tile);
+            GraphPenaltySetter.Instance.RefreshPenaltyAtPosition(worldPos);
+        }
+
         return true;
     }
 
@@ -560,6 +800,21 @@ public class GridMover : MonoBehaviour
 
         return softA && softB;
     }
+    private bool CanEnterNonWalkableTile(CellData cell, Vector2Int tile)
+    {
+        // tylko Player/Enemy (skrzynia ma swoje zasady)
+        if (moverType == GridMoverType.Chest) return false;
+
+        // Jeśli to WODA i mamy koło (float) → można wejść
+        var inv = GetComponent<UnitInventory>();
+        if (inv != null && inv.HasFloatEquipped)
+        {
+            if (TileLogicManager.Instance != null && TileLogicManager.Instance.IsWaterTile(tile))
+                return true;
+        }
+
+        return false;
+    }
 
     // ======================================================
     // 🔹 OBSŁUGA RUCHU NA POLACH ŚLISKICH
@@ -571,6 +826,27 @@ public class GridMover : MonoBehaviour
         {
             isSliding = false;
             return;
+        }
+
+        // 🧹 Rozpoczęcie ślizgu kasuje wszystkie wcześniejsze rozkazy
+        pendingCommand = null;
+
+        // --- SPECJALNA BLOKADA ŚLIZGANIA DLA PLAYERA ---
+        if (moverType == GridMoverType.Player)
+        {
+            Vector2Int next = currentTile + lastDirection;
+            var nextData = TileLogicManager.Instance.GetCellDataAt(TileToWorld(next));
+
+            // Jeśli pierwszy krok ślizgu jest zablokowany → nie ślizgamy się
+            if (nextData == null ||
+                (!nextData.walkable && !CanEnterNonWalkableTile(nextData, next)) ||
+                nextData.isObstacleHard ||
+                nextData.isObstacleSoft ||
+                !CanReserve(next, this))
+            {
+                isSliding = false;
+                return;
+            }
         }
 
         Vector2Int dir = lastDirection;
@@ -589,7 +865,7 @@ public class GridMover : MonoBehaviour
             if (nextData == null) break;
 
             // przeszkody twarde/miękkie lub nieprzechodnie → koniec PRZED nimi
-            if (!nextData.walkable || nextData.isObstacleHard || nextData.isObstacleSoft)
+            if ((!nextData.walkable && !CanEnterNonWalkableTile(nextData, next)) || nextData.isObstacleHard || nextData.isObstacleSoft)
                 break;
 
             // zajęty cel → koniec (nie wjeżdżamy na jednostkę)
@@ -619,12 +895,35 @@ public class GridMover : MonoBehaviour
             bool softB = dataB != null && dataB.isObstacleSoft;
             bool singleSoft = softA ^ softB;
 
+            // 🔒 Specjalny zakaz dla skrzyni — skrzynia NIE MOŻE wejść na "walkable", które nie jest jej dozwolone
+            if (moverType == GridMoverType.Chest)
+            {
+                if (!TileLogicManager.Instance.CanChestEnter(nextData))
+                {
+                    break; // zatrzymaj ślizg przed wejściem na niedozwolony kafel
+                }
+            }
+
             // next jest przechodni → zapamiętujemy go jako ostatni bezpieczny
             lastValid = next;
 
-            // jeżeli next nie jest śliski → to nasz cel wyjazdu z lodu
+            // jeżeli next nie jest śliski - OBSŁUGA ŚLIZGU → różne zasady dla Player i Chest
             if (!nextData.isSlippery)
+            {
+                if (moverType == GridMoverType.Chest)
+                {
+                    // ❌ skrzynia NIE MOŻE wejść na to pole — koniec ślizgu
+                    if (!TileLogicManager.Instance.CanChestEnter(nextData))
+                    {
+                        // zostajemy na ostatnim "legalnym" slipper
+                        break;
+                    }
+                }
+
+                // ✔️ tutaj wiemy, że skrzynia MOŻE wejść
+                lastValid = next;
                 break;
+            }
 
             // inaczej sondę przesuwamy dalej po lodzie
             probe = next;
@@ -639,8 +938,19 @@ public class GridMover : MonoBehaviour
 
         // jedziemy do ustalonego kafelka (ostatni po lodzie lub pierwszy poza nim)
         isSliding = true;
-        RequestPathTo(TileToWorld(lastValid));
-        moving = true; // utrzymujemy stan ruchu przez cały ślizg
+        atTileCenter = false;
+        InternalRequestPathTo(TileToWorld(lastValid));
+        moving = true;
+    }
+    public bool HasJustPushedBox()
+    {
+        bool value = justPushedBox;
+        justPushedBox = false;
+        return value;
+    }
+    public void MarkJustPushedBox()
+    {
+        justPushedBox = true;
     }
 
     // ===============================================
@@ -709,34 +1019,50 @@ public class GridMover : MonoBehaviour
     }
     public void ForceMove(Vector2Int direction)
     {
+        // 🧹 Ruch wymuszony przez strzałkę kasuje wcześniejsze rozkazy
+        pendingCommand = null;
+
         // 🔹 Wymuszenie natychmiastowego ruchu o jedno pole
         Vector2Int next = currentTile + direction;
 
-        // 🔸 Sprawdź, czy ruch jest w granicach mapy (opcjonalne bezpieczeństwo)
-        var targetData = TileLogicManager.Instance.GetCellDataAt(new Vector3(next.x + 0.5f, next.y + 0.5f, 0));
-        if (targetData == null || !targetData.walkable || targetData.isObstacleHard)
+        // 🔸 Sprawdź kafelek docelowy w logice siatki
+        var targetData = TileLogicManager.Instance.GetCellDataAt(
+            new Vector3(next.x + 0.5f, next.y + 0.5f, 0));
+
+        bool blocked = false;
+
+        if (targetData == null)
         {
-            Debug.Log($"{name}: ArrowTile zablokowany – nie można wejść na {next}");
+            blocked = true;
+        }
+        else if (moverType == GridMoverType.Chest)
+        {
+            // Skrzynia korzysta z własnych zasad (może wejść np. na wodę)
+            if (!TileLogicManager.Instance.CanChestEnter(targetData))
+                blocked = true;
+        }
+        else
+        {
+            // Player / Enemy – klasyczne zasady
+            if ((!targetData.walkable && !CanEnterNonWalkableTile(targetData, next)) || targetData.isObstacleHard)
+                blocked = true;
+        }
+
+        if (blocked)
+        {
+            Debug.Log($"{name}: ForceMove zablokowany – nie można wejść na {next}");
             return;
         }
 
-        // 🔹 Przygotuj jednoetapową ścieżkę
+        // ✅ Jeśli nie ma blokady – ustaw prostą ścieżkę na JEDEN kafelek
+        ClearAllReservationsOwnedBy(this);
+        nextTile = null;
         pathTiles.Clear();
-        pathTiles.Add(next);
         pathIndex = 0;
-        nextTile = pathTiles[0];
-
-        // 🔹 Reset flag i liczników ruchu
-        moving = true;
-        blockTimer = 0f;
         repathAttempts = 0;
-        isSliding = false;
 
-        // 🔹 Zapamiętaj kierunek (dla Arrow_Cross)
-        lastDirection = direction;
-
-        // 🔹 Debug (dla pewności)
-        Debug.Log($"{name}: ForceMove → start ruchu w kierunku {direction}");
+        pathTiles.Add(next);
+        moving = true;
     }
 
     public void SetArrowChain(bool value)
@@ -754,5 +1080,110 @@ public class GridMover : MonoBehaviour
     public Vector2Int GetCurrentTile()
     {
         return currentTile;
+    }
+
+    // ===============================================
+    // 🔹 Zatrzymanie ruchu z zewnątrz (np. przy zmianie rozkazu)
+    // ===============================================
+    public void StopMoving()
+    {
+        // ❌ Podczas ślizgu lub jazdy po łańcuchu strzałek
+        // ignorujemy próby zatrzymania z zewnątrz.
+        if (isSliding || isOnArrowChain)
+        {
+            if (logDebug)
+                Debug.Log($"{name}: StopMoving zignorowane – jednostka ślizga się / jest na łańcuchu strzałek.");
+            return;
+        }
+
+        // 🧱 KLUCZOWA ZMIANA:
+        // Jeśli jesteśmy w trakcie kroku A→B (nextTile != null i NIE jesteśmy w centrum kafla),
+        // to NIE przerywamy ruchu w połowie.
+        // Po prostu czyścimy dalszą ścieżkę i pozwalamy dokończyć dojście do B.
+        if (nextTile != null && !atTileCenter)
+        {
+            pathTiles.Clear();
+            pathIndex = 0;
+            // po dojściu do B reachedEndOfCurrentPath będzie true → moving=false samo się ustawi
+            if (logDebug)
+                Debug.Log($"{name}: StopMoving odroczone – dokończę krok do {nextTile.Value} i zatrzymam się na nim.");
+            return;
+        }
+
+        // klasyczne zatrzymanie (stoimy na kafelku)
+        ClearAllReservationsOwnedBy(this);
+        nextTile = null;
+        moving = false;
+        pathTiles.Clear();
+        pathIndex = 0;
+    }
+
+    // ======================================================
+    // 🔄 TELEPORTACJA – używane przez TeleportEntry
+    // ======================================================
+    public void TeleportTo(Vector3 worldPos)
+    {
+        // 1) Zwolnij stary kafelek w systemie OccupiedBy
+        ReleaseIfOccupiedBy(currentTile, this);
+
+        // 2) Przeskocz na nowy środek kafelka
+        Vector2 snapped = SnapCenter(worldPos);
+        transform.position = snapped;
+
+        // 3) Zaktualizuj współrzędne kafelka
+        currentTile = WorldToTile(snapped);
+
+        // 🔥 Najpierw sprawdź: czy na polu stoi skrzynia?
+        GridMover previousOccupier = null;
+        OccupiedBy.TryGetValue(currentTile, out previousOccupier);
+
+        // Jeżeli Player wylądował na skrzyni → natychmiast ginie
+        if (moverType == GridMoverType.Player && previousOccupier != null)
+        {
+            if (previousOccupier.moverType == GridMoverType.Chest)
+            {
+                var hp = GetComponent<Health>();
+                if (hp != null) hp.TakeDamage(hp.MaxHP);
+                return;
+            }
+        }
+
+        // 4) Zajmij nowy kafelek
+        Occupy(currentTile, this);
+
+        // 5) Wyczyść ścieżkę i stany ruchu
+        pathTiles.Clear();
+        pathIndex = 0;
+        nextTile = null;
+        moving = false;
+
+        // 🧊 Po teleportacji NIE ma ślizgu,
+        // a poprzedni kierunek ruchu jest zapominany
+        isSliding = false;
+        lastDirection = Vector2Int.zero;
+
+        // 🧹 Skasuj też wszystkie wcześniej zapamiętane rozkazy
+        pendingCommand = null;
+
+        // po teleportacji stoimy IDEALNIE w środku kafelka
+        atTileCenter = true;
+
+        if (TileLogicManager.Instance != null)
+        {
+            var currentCellData = TileLogicManager.Instance.GetCellDataAt(TileToWorld(currentTile));
+
+            // 🌀 TELEPORT — obsługa wejścia
+            if (currentCellData != null && currentCellData.hasTeleport)
+            {
+                currentCellData.teleport.HandleUnitStepOn(gameObject);
+            }
+
+            // 🔹 standardowa logika pól
+            TileLogicManager.Instance.HandlePlayerOnTile(gameObject);
+        }
+    }
+    public static bool IsCellOccupied(Vector2Int tile)
+    {
+        return OccupiedBy.ContainsKey(tile);
     }
 }

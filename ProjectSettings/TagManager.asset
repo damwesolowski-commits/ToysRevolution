@@ -5,6 +5,10 @@ TagManager:
   serializedVersion: 3
   tags:
   - Ball
+  - Enemy
+  - Chest
+  - Obstacles soft
+  - Obstacles hard
   layers:
   - Default
   - TransparentFX
@@ -19,10 +23,10 @@ TagManager:
   - Hazard
   - ObstaclesSoft
   - Clickable
-  - 
-  - 
-  - 
-  - 
+  - DeadlyTiles
+  - Spikes
+  - ObstaclesSoftDebug
+  - ObstaclesHardDebug
   - 
   - 
   - 
@@ -56,6 +60,9 @@ TagManager:
     locked: 0
   - name: Elements being demolished
     uniqueID: 2565273695
+    locked: 0
+  - name: Shadows
+    uniqueID: 1142920023
     locked: 0
   - name: Units
     uniqueID: 1326033519

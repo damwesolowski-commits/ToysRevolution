@@ -876,9 +876,9 @@ public class AstarPath : VersionedMonoBehaviour {
 			if (logPathResults == PathLog.InGame) {
 				inGameDebugPath = output;
 			} else if (path.error) {
-				Debug.LogWarning(output);
+				//Debug.LogWarning(output);
 			} else {
-				Debug.Log(output);
+				//Debug.Log(output);
 			}
 		}
 	}

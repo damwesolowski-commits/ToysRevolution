@@ -6,8 +6,9 @@ public class BlueBlockRegistry : ColorBlockRegistryBase
 {
     public override List<ColorBlock> GetBlocksByGroup(int id)
     {
-        if (allBlocks.Count == 0)
-            allBlocks.AddRange(FindObjectsByType<BlueBlock>(FindObjectsSortMode.None));
+        allBlocks = FindObjectsByType<BlueBlock>(FindObjectsSortMode.None)
+                    .Cast<ColorBlock>()
+                    .ToList();
 
         return allBlocks.Where(b => b.groupId == id).ToList();
     }

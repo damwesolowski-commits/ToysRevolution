@@ -75,6 +75,16 @@ public class RollingBall : MonoBehaviour
             currentTile = (Vector2Int)currentCell;
 
             Vector2Int nextTile = currentTile + direction;
+            // 🔥 Jeśli na docelowym kafelku stoi skrzynia — zniszcz kulę
+            if (GridMover.IsCellOccupied(nextTile))
+            {
+                GridMover occupier = GetOccupier(nextTile);
+                if (occupier != null && occupier.moverType == GridMover.GridMoverType.Chest)
+                {
+                    DestroyBall("Kula wjechała na skrzynię");
+                    yield break;
+                }
+            }
 
             // 🧩 Zabezpieczenie przed próbą wejścia w ten sam kafel
             if (nextTile == currentTile)
@@ -244,5 +254,18 @@ public class RollingBall : MonoBehaviour
     {
        // Debug.Log($"💥 Kula zniszczona: {reason}");
         Destroy(gameObject);
+    }
+    private GridMover GetOccupier(Vector2Int tile)
+    {
+        // dostęp do prywatnego słownika OccupiedBy w GridMover
+        var field = typeof(GridMover).GetField("OccupiedBy",
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+
+        var dict = field.GetValue(null) as System.Collections.IDictionary;
+
+        if (dict.Contains(tile))
+            return dict[tile] as GridMover;
+
+        return null;
     }
 }

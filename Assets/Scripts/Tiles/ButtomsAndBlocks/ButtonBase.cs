@@ -4,8 +4,8 @@ public abstract class ButtonBase : MonoBehaviour
 {
 
     [Header("Group Settings")]
-    public int groupId; 
-    
+    public int groupId;
+
     [Header("Button Visuals")]
     public Sprite idleSprite;
     public Sprite pressedSprite;
@@ -17,6 +17,8 @@ public abstract class ButtonBase : MonoBehaviour
     protected ColorBlockRegistryBase blockRegistry;
     protected SpriteRenderer spriteRenderer;
     protected AudioSource audioSource;
+    // 🔒 Flaga, która blokuje automatyczne "odkliknięcie" przycisku (np. dla DoubleShiftButton)
+    protected bool suppressRelease = false;
 
     // 🧍 Lista jednostek aktualnie stojących na przycisku
     private readonly System.Collections.Generic.List<GameObject> occupants = new();
@@ -52,14 +54,19 @@ public abstract class ButtonBase : MonoBehaviour
     public virtual void HandleUnitStepOff(GameObject unit)
     {
         if (unit == null) return;
+
         if (occupants.Contains(unit))
             occupants.Remove(unit);
 
         if (occupants.Count == 0)
         {
-            SetPressedVisuals(false);
-            PlaySound(releaseSound);
-            OnReleased(unit);
+            // 🔹 Nie cofaj wizualnie przycisków, które mają zablokowany release
+            if (!suppressRelease)
+            {
+                SetPressedVisuals(false);
+                PlaySound(releaseSound);
+                OnReleased(unit);
+            }
         }
     }
 
@@ -121,15 +128,15 @@ public abstract class ButtonBase : MonoBehaviour
             }
         }
 
-        // 🔹 Nie cofaj wizualnie przycisków, które są zablokowane (np. DoubleShiftButton)
-        if (this is DoubleShiftButton)
-            return;
-
         if (occupants.Count == 0 && spriteRenderer != null && spriteRenderer.sprite == pressedSprite)
         {
-            SetPressedVisuals(false);
-            PlaySound(releaseSound);
-            OnReleased(gameObject);
+            // 🔹 Nie cofaj wizualnie przycisków z aktywnym hamulcem
+            if (!suppressRelease)
+            {
+                SetPressedVisuals(false);
+                PlaySound(releaseSound);
+                OnReleased(gameObject);
+            }
         }
     }
 }
